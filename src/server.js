@@ -14,6 +14,10 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
 app.all("*", (req, res) => {
   res.status(404).send("<h1>404! Page not found</h1>");
 });

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head") %>
+    <link rel="stylesheet" href="styles/auth.css" />
+  </head>
+  <body>
+    <main>
+      <form action="api/login" method="get">
+        <h1>
+          <i class="fa-solid fa-bug"></i>
+          <span>Bug Tracker</span>
+        </h1>
+        <div data-input="1"></div>
+        <div data-input="2"></div>
+        <button type="submit">Login</button>
+        <div>
+          <p>Forgot your <a href="">password</a>?</p>
+          <p>
+            Don't have an account?
+            <a href="/register">Register</a>
+          </p>
+        </div>
+      </form>
+    </main>
+    <script src="scripts/animatedLabel.js"></script>
+    <script>
+      createAnimatedInput({
+        input: 1,
+        id: "email",
+        label: "email",
+        type: "email",
+        icon: "fa-solid fa-envelope"
+      });
+      createAnimatedInput({
+        input: 2,
+        id: "password",
+        label: "password",
+        type: "password",
+        icon: "fa-solid fa-lock"
+      });
+    </script>
+  </body>
+</html>

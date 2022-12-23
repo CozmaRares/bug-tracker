@@ -1,0 +1,118 @@
+main {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+form {
+  height: fit-content;
+  width: 500px;
+  border-radius: 10px;
+  background-color: var(--secondary-bg);
+  padding: 1.5rem;
+  box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.75);
+}
+
+h1 {
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 500;
+}
+
+h1 span {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  border-bottom: 4px solid black;
+}
+
+div[data-input] {
+  position: relative;
+  margin-top: 1.25rem;
+  margin-bottom: 2.5rem;
+  cursor: text;
+  font-size: 1em;
+}
+
+input {
+  border: none;
+  outline: none;
+  display: block;
+  width: 100%;
+  border-bottom: 2px solid black;
+  padding: 1rem 0;
+  cursor: text;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+label {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  cursor: text;
+}
+
+input + label span.animated {
+  transition: transform 200ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  display: inline-block;
+}
+
+input:is(:focus, :not([value=""])) + label span.animated {
+  transform: translateY(-30px);
+}
+
+button {
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 10px;
+  background-color: var(--main-bg);
+  padding: 1rem;
+  transition-property: color, background-color;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+button:hover {
+  background-color: var(--main-text);
+  color: var(--main-bg);
+}
+
+button:disabled {
+  background-color: #6b7280;
+  color: var(--main-text);
+}
+
+div:has(p) {
+  padding-top: 2.25rem;
+  text-align: center;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: var(--secondary-text);
+}
+
+p {
+  transition-property: color;
+}
+
+p:hover {
+  color: var(--main-text);
+}
+
+a {
+  color: inherit;
+}
+
+a:not(:hover) {
+  text-decoration: underline dotted;
+}
