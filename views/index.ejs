@@ -4,6 +4,10 @@
     <%- include("partials/head") %>
   </head>
   <body>
-    <div>Hello, world!</div>
+    <div>Hello <%= username %>!</div>
+
+    <form action="/api/logout?_method=DELETE" method="POST">
+      <button type="submit">Log Out</button>
+    </form>
   </body>
 </html>
