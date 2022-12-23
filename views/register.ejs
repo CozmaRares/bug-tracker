@@ -6,36 +6,45 @@
   </head>
   <body>
     <main>
-      <form action="api/login" method="GET">
+      <form action="api/register" method="POST">
         <h1>
           <i class="fa-solid fa-bug"></i>
           <span>Bug Tracker</span>
         </h1>
         <div data-input="1"></div>
         <div data-input="2"></div>
-        <button type="submit">Login</button>
-        <div>
-          <p>Forgot your <a href="">password</a>?</p>
-          <p>
-            Don't have an account?
-            <a href="/register">Register</a>
-          </p>
-        </div>
+        <div data-input="3"></div>
+        <div data-input="4"></div>
+        <button type="submit">Register</button>
       </form>
     </main>
     <script src="scripts/animatedLabel.js"></script>
     <script>
       createAnimatedInput({
         input: 1,
+        id: "username",
+        label: "username",
+        type: "text",
+        icon: "fa-solid fa-user"
+      });
+      createAnimatedInput({
+        input: 2,
         id: "email",
         label: "email",
         type: "email",
         icon: "fa-solid fa-envelope"
       });
       createAnimatedInput({
-        input: 2,
+        input: 3,
         id: "password",
         label: "password",
+        type: "password",
+        icon: "fa-solid fa-lock"
+      });
+      createAnimatedInput({
+        input: 4,
+        id: "password-confirm",
+        label: "confirm password",
         type: "password",
         icon: "fa-solid fa-lock"
       });
