@@ -26,3 +26,11 @@ body {
   background-color: var(--main-bg);
   font-family: "Roboto Mono", monospace;
 }
+
+.spacer {
+  padding: 1rem;
+}
+
+.spacer-lg {
+  padding: 2rem;
+}

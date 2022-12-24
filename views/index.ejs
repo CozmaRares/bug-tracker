@@ -2,12 +2,12 @@
 <html lang="en">
   <head>
     <%- include("partials/head") %>
+    <link rel="stylesheet" href="styles/dashboard.css" />
   </head>
   <body>
-    <div>Hello <%= username %>!</div>
-
-    <form action="/api/logout?_method=DELETE" method="POST">
-      <button type="submit">Log Out</button>
-    </form>
+    <%- include("partials/dashboard-layout1", { username, role,
+    dataAttribute:"home" }) %>
+    <div>text</div>
+    <%-include("partials/dashboard-layout2") %>
   </body>
 </html>

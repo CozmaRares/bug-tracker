@@ -1,0 +1,157 @@
+.container {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.side-nav {
+  width: fit-content;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(3, auto) 1fr;
+  background-color: var(--secondary-bg);
+}
+
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-container {
+  border-radius: 9999px;
+  border: 1px solid black;
+  padding: 0.5rem;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-container img {
+  width: 64px;
+  aspect-ratio: 1;
+}
+
+.text-container {
+  text-align: center;
+}
+
+.text-container :first-child {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 500;
+}
+
+.text-container :last-child {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.links {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  padding-right: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  text-transform: capitalize;
+  flex-direction: column;
+  list-style: none;
+}
+
+.links h6 {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  text-decoration: underline;
+  color: #374151;
+}
+
+.links a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.links li {
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-top-left-radius: 9999px;
+  border-bottom-left-radius: 9999px;
+  padding: 1rem;
+  padding-right: 1rem;
+}
+
+.links a.selected {
+  pointer-events: none;
+}
+
+.links a.selected li {
+  background-color: var(--main-bg);
+}
+
+.links a:not(.selected) li {
+  cursor: pointer;
+}
+
+.links a:not(.selected) li:hover {
+  background-image: linear-gradient(to right, #e5e5e5, #f1f5f9, var(--main-bg));
+}
+
+.links li div {
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.links i {
+  height: 0.8em;
+}
+
+.links div:last-child {
+  position: relative;
+}
+
+.links div:last-child form {
+  pointer-events: none;
+  position: absolute;
+  left: 75%;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  border-radius: 5px;
+  border: 1px solid black;
+  background-color: var(--secondary-bg);
+  padding: 0.5rem;
+  opacity: 0;
+  transition-property: opacity, background-color;
+  cursor: pointer;
+  color: red;
+}
+
+.links div:last-child:hover form {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.links > div:last-child form:hover {
+  background-color: var(--main-bg);
+}
+
+.links button {
+  outline: none;
+  border: none;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-color: inherit;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}

@@ -20,7 +20,15 @@ require("./passport-config")(
 
 const port = 3000;
 const app = express();
-const users = [];
+const users = [
+  {
+    id: crypto.randomUUID(),
+    username: "a",
+    email: "a@a",
+    password: hashPassword("a"),
+    role: "admin"
+  }
+];
 
 app.set("view engine", "ejs");
 app.use(express.static(path.resolve(__dirname, "..", "public")));
@@ -47,7 +55,8 @@ app.post("/api/register", checkNotAuthenticated, (req, res) => {
       id: crypto.randomUUID(),
       username: req.body.username,
       email: req.body.email,
-      password: hashedPassword
+      password: hashedPassword,
+      role: "submitter"
     });
     res.redirect("/login");
     console.log(users);
@@ -78,7 +87,7 @@ app.get("/api/users", (req, res) => {
 });
 
 app.get("/", checkAuthenticated, (req, res) => {
-  res.render("index", { username: req.user.username });
+  res.render("index", { username: req.user.username, role: req.user.role });
 });
 
 app.get("/login", checkNotAuthenticated, (req, res) => {
