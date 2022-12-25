@@ -10,7 +10,6 @@ const methodOverride = require("method-override");
 
 const { hashPassword } = require("./utils/bcrypt-wrapper");
 const { checkAuthenticated, checkNotAuthenticated } = require("./middleware");
-const { nextTick } = require("process");
 
 require("./passport-config")(
   passport,
