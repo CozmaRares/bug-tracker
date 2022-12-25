@@ -132,7 +132,6 @@
   padding: 0.5rem;
   opacity: 0;
   transition-property: opacity, background-color;
-  cursor: pointer;
   color: red;
 }
 
@@ -154,4 +153,5 @@
   background-color: inherit;
   font-size: 1rem;
   line-height: 1.5rem;
+  cursor: pointer;
 }

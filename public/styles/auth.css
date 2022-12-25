@@ -64,6 +64,7 @@ label {
   flex-direction: row;
   width: 100%;
   cursor: text;
+  white-space: pre;
 }
 
 span.error {

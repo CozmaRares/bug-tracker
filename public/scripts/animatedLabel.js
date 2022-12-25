@@ -10,8 +10,6 @@
     initialValue?: string - take a guess part 3
 */
 function createAnimatedInput(props) {
-  console.log(JSON.stringify(props, null, 2));
-
   const div = document.querySelector(`[data-input="${props.input}"]`);
   div.innerHTML = `
     <input

@@ -11,6 +11,14 @@
   enable-background="new 0 0 1000 1000"
   xml:space="preserve"
 >
+  <style>
+    @media (prefers-color-scheme: dark) {
+      path {
+        fill: white;
+        stroke: white;
+      }
+    }
+  </style>
   <metadata>Svg Vector Icons : http://www.onlinewebfonts.com/icon</metadata>
   <g>
     <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)">

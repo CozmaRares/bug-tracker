@@ -5,29 +5,17 @@ const path = require("path");
 const passport = require("passport");
 const flash = require("express-flash");
 const session = require("express-session");
-const crypto = require("crypto");
 const methodOverride = require("method-override");
 
 const { hashPassword } = require("./utils/bcrypt-wrapper");
 const { checkAuthenticated, checkNotAuthenticated } = require("./middleware");
+const db = require("./utils/db/data");
+const dbEnums = require("./utils/db/enums");
 
-require("./passport-config")(
-  passport,
-  email => users.find(user => user.email === email),
-  id => users.find(user => user.id === id)
-);
+require("./passport-config")(passport, db.users.getUserByEmail);
 
 const port = 3000;
 const app = express();
-const users = [
-  {
-    id: crypto.randomUUID(),
-    username: "a",
-    email: "a@a",
-    password: hashPassword("a"),
-    role: "admin"
-  }
-];
 
 app.set("view engine", "ejs");
 app.use(express.static(path.resolve(__dirname, "..", "public")));
@@ -45,21 +33,26 @@ app.use(passport.session());
 app.use(methodOverride("_method"));
 
 app.post("/api/register", checkNotAuthenticated, (req, res) => {
-  if (req.body.password != req.body.passwordConfirm) res.redirect("/register");
+  if (req.body.password != req.body.passwordConfirm) {
+    req.flash("error", "passwords");
+    req.flash("email", req.body.email);
+    req.flash("username", req.body.username);
+    return res.redirect("/register");
+  }
 
   const hashedPassword = hashPassword(req.body.password);
 
   try {
-    users.push({
-      id: crypto.randomUUID(),
+    db.users.addUser({
       username: req.body.username,
       email: req.body.email,
       password: hashedPassword,
-      role: "submitter"
+      role: dbEnums.USER_ROLE.SUBMITTER
     });
     res.redirect("/login");
-    console.log(users);
   } catch {
+    req.flash("error", "email");
+    req.flash("username", req.body.username);
     res.redirect("/register");
   }
 });
@@ -74,15 +67,11 @@ app.post(
   })
 );
 
-app.delete("/api/logout", (req, res) => {
+app.delete("/api/logout", checkAuthenticated, (req, res) => {
   req.logOut(err => {
     if (err) return next(err);
     res.redirect("/login");
   });
-});
-
-app.get("/api/users", (req, res) => {
-  res.json(users);
 });
 
 app.get("/", checkAuthenticated, (req, res) => {

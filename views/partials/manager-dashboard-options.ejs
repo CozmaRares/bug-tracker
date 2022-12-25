@@ -1,8 +1,7 @@
-<% if(role.toLowerCase() === "admin" || role.toLowerCase() === "manager") { %>
+<% if(role === "admin" || role === "manager") { %>
 <div>
   <h6>management</h6>
-  <% if(role.toLowerCase() === "admin") { %> <%-
-  include("admin-dashboard-options") %> <% } %>
+  <% if(role === "admin") { %> <%- include("admin-dashboard-options") %> <% } %>
   <a href="/projects" data-projects>
     <li>
       <div>

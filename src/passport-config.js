@@ -1,7 +1,7 @@
 const LocalStrategy = require("passport-local").Strategy;
 const { comparePassword } = require("./utils/bcrypt-wrapper");
 
-function init(passport, getUserByEmail, getUserById) {
+function init(passport, getUserByEmail) {
   passport.use(
     new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
       const user = getUserByEmail(email);
@@ -14,8 +14,8 @@ function init(passport, getUserByEmail, getUserById) {
       return done(null, user);
     })
   );
-  passport.serializeUser((user, done) => done(null, user.id));
-  passport.deserializeUser((id, done) => done(null, getUserById(id)));
+  passport.serializeUser((user, done) => done(null, user.email));
+  passport.deserializeUser((email, done) => done(null, getUserByEmail(email)));
 }
 
 module.exports = init;
