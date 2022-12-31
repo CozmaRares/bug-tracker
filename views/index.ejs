@@ -3,11 +3,116 @@
   <head>
     <%- include("partials/head") %>
     <link rel="stylesheet" href="/styles/dashboard.css" />
+    <link rel="stylesheet" href="/styles/dashboard-index.css" />
   </head>
   <body>
     <%- include("partials/dashboard-layout-start", { username, role,
     dataAttribute:"home" }) %>
-    <div>text</div>
+    <div class="content">
+      <div class="projects">
+        <h2>Projects</h2>
+        <% if(projects.length == 0) {%>
+        <p>No projects.</p>
+        <% } else { %>
+        <ul>
+          <% projects.forEach(project => {%>
+          <li>
+            <h3>
+              <a href="/project/<%= project.id %>"><%= project.name %></a>
+            </h3>
+            <h6><%= project.status.toUpperCase() %></h6>
+            <h4>Manager <%= project.managerUserName %></h4>
+            <p>Started <%= project.createdAt %></p>
+          </li>
+          <% }); %>
+        </ul>
+        <% } %>
+      </div>
+      <div class="charts">
+        <div>
+          <canvas data-priority></canvas>
+        </div>
+        <div>
+          <canvas data-status></canvas>
+        </div>
+      </div>
+    </div>
     <%-include("partials/dashboard-layout-end") %>
   </body>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.1.1/dist/chart.umd.min.js"></script>
+  <script>
+    const ticketsData = JSON.parse(
+      "<%= JSON.stringify(ticketsData) %>".replaceAll("&#34;", '"')
+    );
+
+    const priorityCtx = document.querySelector("[data-priority]");
+    const statusCtx = document.querySelector("[data-status]");
+
+    new Chart(priorityCtx, {
+      type: "doughnut",
+      data: {
+        labels: Object.keys(ticketsData["priority"]),
+        datasets: [
+          {
+            label: "# of Tickets",
+            data: Object.entries(ticketsData["priority"]).map(
+              ([_, number]) => number
+            ),
+            backgroundColor: [
+              "rgba(255, 15, 15, 0.7)",
+              "rgba(50, 205, 50, 0.7)",
+              "rgba(255, 206, 86, 0.7)",
+              "rgba(54, 162, 235, 0.7)"
+            ]
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "top"
+          },
+          title: {
+            display: true,
+            text: "Tickets by Priority",
+            font: {
+              size: 25
+            }
+          }
+        }
+      }
+    });
+
+    new Chart(statusCtx, {
+      type: "bar",
+      data: {
+        labels: Object.keys(ticketsData["status"]),
+        datasets: [
+          {
+            label: "# of Tickets",
+            data: Object.entries(ticketsData["status"]).map(
+              ([_, number]) => number
+            ),
+            backgroundColor: "#282828"
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "top"
+          },
+          title: {
+            display: true,
+            text: "Tickets by Status",
+            font: {
+              size: 25
+            }
+          }
+        }
+      }
+    });
+  </script>
 </html>

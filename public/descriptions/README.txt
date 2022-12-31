@@ -1,0 +1,1 @@
+Here are located the description files (see schema.sql in the 'db' directory).

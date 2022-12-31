@@ -1,7 +1,12 @@
 const { USER_ROLE } = require("../db/enums");
+const db = require("../db/db");
 
-function canViewProject(user, project) {
-  return user.role === USER_ROLE.ADMIN || project.userEmail === user.email;
+async function canViewProject(user, project) {
+  return (
+    user.role === USER_ROLE.ADMIN ||
+    project.managerEmail === user.email ||
+    (await db.project.isUserAssigned(project.id, user.email))
+  );
 }
 
 module.exports = {

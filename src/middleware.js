@@ -1,4 +1,4 @@
-const db = require("./utils/db/data");
+const db = require("./utils/db/db");
 const { canViewProject } = require("./utils/permissions/project");
 
 function checkAuthenticated(req, res, next) {
@@ -19,19 +19,20 @@ function userRole(role) {
   };
 }
 
-function setProject(req, res, next) {
-  const id = parseInt(req.params.projectId);
+async function setProject(req, res, next) {
+  const id = req.params.projectID;
 
-  req.project = db.projects.getProjectById(id);
+  req.project = await db.project.getById(id);
 
   if (req.project == null) return res.status(404).send("Project not found");
 
   next();
 }
 
-function authGetProject(req, res, next) {
-  if (!canViewProject(req.user, req.project))
-    return res.status(401).send("Not allowed");
+async function authGetProject(req, res, next) {
+  const canView = await canViewProject(req.user, req.project);
+
+  if (!canView) return res.status(401).redirect("/");
 
   next();
 }

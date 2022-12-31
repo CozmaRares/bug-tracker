@@ -1,21 +1,24 @@
 const LocalStrategy = require("passport-local").Strategy;
-const { comparePassword } = require("./utils/bcrypt-wrapper");
+const { comparePassword } = require("./utils/utils");
 
-function init(passport, getUserByEmail) {
+module.exports = (passport, getUserByEmail) => {
   passport.use(
-    new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
-      const user = getUserByEmail(email);
+    new LocalStrategy(
+      { usernameField: "email" },
+      async (email, password, done) => {
+        const user = await getUserByEmail(email);
 
-      if (user == null) return done(null, false, { message: "email" });
+        if (user == null) return done(null, false, { message: "email" });
 
-      if (!comparePassword(password, user.password))
-        return done(null, false, { message: "password" });
+        if (!comparePassword(password, user.password))
+          return done(null, false, { message: "password" });
 
-      return done(null, user);
-    })
+        return done(null, user);
+      }
+    )
   );
   passport.serializeUser((user, done) => done(null, user.email));
-  passport.deserializeUser((email, done) => done(null, getUserByEmail(email)));
-}
-
-module.exports = init;
+  passport.deserializeUser(async (email, done) =>
+    done(null, await getUserByEmail(email))
+  );
+};
