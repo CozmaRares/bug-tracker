@@ -1,0 +1,36 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap");
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition-property: none;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root {
+  --main-bg: /* slate-300 */ #cbd5e1;
+  --secondary-bg: white;
+  --main-text: black;
+  --secondary-text: /* gray-700 */ #374151;
+}
+
+body {
+  height: 100vh;
+  min-height: 100vh;
+  width: 100vw;
+  max-width: 100vw;
+  background-color: var(--main-bg);
+  font-family: "Roboto Mono", monospace;
+}
+
+.spacer {
+  padding: 1rem;
+}
+
+.spacer-lg {
+  padding: 2rem;
+}

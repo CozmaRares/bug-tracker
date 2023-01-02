@@ -2,7 +2,7 @@ const crypto = require("crypto");
 
 const { TICKET_STATUS } = require("../enums");
 const { createDescriptionFile } = require("../../utils");
-const { runQuery } = require("../runQuery");
+const { runQuery } = require("./runQuery");
 
 function create(ticket) {
   const descriptionFileID = createDescriptionFile(ticket.description);

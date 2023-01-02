@@ -1,14 +1,23 @@
-<% if(role.toUpperCase() === "ADMIN" || role.toUpperCase() === "MANAGER") { %>
+<% if(role.toUpperCase() === USER_ROLE.ADMIN || role.toUpperCase() ===
+USER_ROLE.MANAGER) { %>
 <div>
   <h6>management</h6>
   <% if(role.toUpperCase() === "ADMIN") { %> <%-
   include("admin-dashboard-options") %> <% } %>
-  <a href="/projects" data-projects>
+  <a href="/manage-projects" data-projects>
     <li>
       <div>
         <i class="fa-solid fa-desktop"></i>
       </div>
       manage projects
+    </li>
+  </a>
+  <a href="/manage-tickets" data-tickets>
+    <li>
+      <div>
+        <i class="fa-solid fa-ticket"></i>
+      </div>
+      manage tickets
     </li>
   </a>
 </div>

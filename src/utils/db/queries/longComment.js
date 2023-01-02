@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 
 const { createDescriptionFile } = require("../../utils");
-const { runQuery } = require("../runQuery");
+const { runQuery } = require("./runQuery");
 
 function create(comment) {
   const contentFileID = createDescriptionFile(comment.description);

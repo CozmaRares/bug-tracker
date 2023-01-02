@@ -11,9 +11,10 @@ function checkNotAuthenticated(req, res, next) {
   next();
 }
 
-function userRole(role) {
+function userRole(...roles) {
   return (req, res, next) => {
-    if (req.user.role != role) return res.status(401).send("Not allowed");
+    if (roles.indexOf(req.user.role) == -1)
+      return res.status(401).redirect("/");
 
     next();
   };

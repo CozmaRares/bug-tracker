@@ -20,7 +20,15 @@
           dashboard
         </li>
       </a>
-      <%- include("manager-dashboard-options", { role }) %>
+      <a href="/" data-submit>
+        <li>
+          <div>
+            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+          </div>
+          submit a ticket
+        </li>
+      </a>
+      <%- include("manager-dashboard-options", { role, USER_ROLE }) %>
       <div>
         <h6>my work</h6>
         <a href="/projects" data-my-projects>

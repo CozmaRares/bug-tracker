@@ -3,14 +3,14 @@
   <head>
     <%- include("partials/head") %>
     <link rel="stylesheet" href="/styles/dashboard.css" />
-    <link rel="stylesheet" href="/styles/dashboard-index.css" />
+    <link rel="stylesheet" href="/styles/index.css" />
   </head>
   <body>
-    <%- include("partials/dashboard-layout-start", { username, role,
+    <%- include("partials/dashboard-layout-start", { username, role, USER_ROLE,
     dataAttribute:"home" }) %>
-    <div class="content">
+    <div class="main">
       <div class="projects">
-        <h2>Projects</h2>
+        <h1>Projects</h1>
         <% if(projects.length == 0) {%>
         <p>No projects.</p>
         <% } else { %>

@@ -12,7 +12,8 @@ const {
   checkAuthenticated,
   checkNotAuthenticated,
   setProject,
-  authGetProject
+  authGetProject,
+  userRole
 } = require("./middleware");
 const db = require("./utils/db/db");
 const dbEnums = require("./utils/db/enums");
@@ -24,6 +25,7 @@ const app = express();
 
 app.set("view engine", "ejs");
 app.use(express.static(path.resolve(__dirname, "..", "public")));
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(flash());
 app.use(
@@ -117,12 +119,14 @@ app.get("/", async (req, res) => {
     key => (ticketsData.status[key] = 0)
   );
 
+  delete ticketsData.status[dbEnums.TICKET_STATUS.COMPLETED];
+
   tickets.forEach(ticket => {
+    if (ticket.status == dbEnums.TICKET_STATUS.COMPLETED) return;
+
     ticketsData.priority[ticket.priority]++;
     ticketsData.status[ticket.status]++;
   });
-
-  delete ticketsData.status[dbEnums.TICKET_STATUS.COMPLETED];
 
   projects.forEach(project => {
     project.createdAt = project.createdAt.toLocaleDateString();
@@ -132,7 +136,8 @@ app.get("/", async (req, res) => {
     projects,
     ticketsData,
     username: req.user.name,
-    role: req.user.role
+    role: req.user.role,
+    USER_ROLE: dbEnums.USER_ROLE
   });
 });
 
@@ -142,6 +147,35 @@ app.delete("/logout", (req, res) => {
     res.redirect("/login");
   });
 });
+
+app.get(
+  "/manage-users",
+  userRole(dbEnums.USER_ROLE.ADMIN),
+  async (req, res) => {
+    const users = await db.user.getAll();
+    const SELECT_ROLES = { ...dbEnums.USER_ROLE };
+
+    delete SELECT_ROLES[dbEnums.USER_ROLE.ADMIN];
+
+    res.render("manage-users", {
+      users: users.filter(user => user.role != dbEnums.USER_ROLE.ADMIN),
+      username: req.user.name,
+      role: req.user.role,
+      USER_ROLE: dbEnums.USER_ROLE,
+      SELECT_ROLES
+    });
+  }
+);
+
+app.post(
+  "/update-role",
+  userRole(dbEnums.USER_ROLE.ADMIN),
+  async (req, res) => {
+    await db.user.updateRole(req.body.userEmail, req.body.role);
+
+    res.status(204).send();
+  }
+);
 
 app.get("/project/:projectID", setProject, authGetProject, (req, res) => {
   res.send(req.project);

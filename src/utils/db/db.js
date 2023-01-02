@@ -1,7 +1,5 @@
 const crypto = require("crypto");
 
-const { runQuery } = require("./runQuery");
-
 const user = require("./queries/user");
 const project = require("./queries/project");
 const ticket = require("./queries/ticket");

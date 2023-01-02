@@ -15,7 +15,13 @@ function runQuery(query, cb) {
   dbConnection.query(query, (err, data) => {
     if (err) throw err;
 
-    console.log({ query });
+    console.log({
+      query: query
+        .split("\n")
+        .map(str => str.trim())
+        .filter(str => str.length != 0)
+        .join(" ")
+    });
     cb(data);
   });
 }

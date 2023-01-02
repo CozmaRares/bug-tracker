@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const { endConnection } = require("../src/utils/db/runQuery");
+const { endConnection } = require("../src/utils/db/queries/runQuery");
 const dbEnums = require("../src/utils/db/enums");
 const db = require("../src/utils/db/db");
 

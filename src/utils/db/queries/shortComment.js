@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 
-const { runQuery } = require("../runQuery");
+const { runQuery } = require("./runQuery");
 
 function create(comment) {
   const id = crypto.randomUUID();

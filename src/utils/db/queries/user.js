@@ -1,5 +1,5 @@
 const { hashPassword } = require("../../utils");
-const { runQuery } = require("../runQuery");
+const { runQuery } = require("./runQuery");
 
 function create(user) {
   const query = `
@@ -24,6 +24,15 @@ function create(user) {
       })
     )
   );
+}
+
+function getAll() {
+  const query = `
+    SELECT *
+    FROM User;
+  `;
+
+  return new Promise(resolve => runQuery(query, data => resolve(data)));
 }
 
 function getByEmail(email) {
@@ -88,6 +97,7 @@ function getAssignedTickets(userEmail) {
 
 module.exports = {
   create,
+  getAll,
   getByEmail,
   updateRole,
   getAssignedProjects,

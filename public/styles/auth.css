@@ -122,7 +122,7 @@ button:hover {
 }
 
 button:disabled {
-  background-color: #6b7280;
+  background-color: /* gray-500 */ #6b7280;
   color: var(--main-text);
 }
 

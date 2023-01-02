@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const { runQuery, endConnection } = require("../src/utils/db/runQuery");
+const { runQuery, endConnection } = require("../src/utils/db/queries/runQuery");
 
 fs.readFileSync(path.join(__dirname, "/schema.sql"), "utf-8")
   .split("\n\n")
