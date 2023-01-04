@@ -4,9 +4,9 @@
 
 Raspberry Pi powered text to speech that tells your schedule.
 
-## Features
+## Features to be added
 
-[ ] load schedule
-[ ] LEDs when thinking
-[ ] microphone input
-[ ] speaker output  
+* ~~load schedule~~
+* ~~LEDs when thinking~~
+* ~~microphone input~~
+* ~~speaker output~~

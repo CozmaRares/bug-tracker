@@ -4,91 +4,57 @@
     <%- include("partials/head") %>
     <link rel="stylesheet" href="/styles/dashboard.css" />
     <link rel="stylesheet" href="/styles/manage-users.css" />
+    <link rel="stylesheet" href="/styles/utils/select.css" />
+    <script src="/scripts/select.js"></script>
   </head>
   <body>
     <%- include("partials/dashboard-layout-start", { username, role, USER_ROLE,
     dataAttribute:"manage-users" }) %>
-    <div class="main">
-      <h1>Registered Users</h1>
-      <ul class="users">
-        <% users.forEach((user, idx) => { %>
-        <li>
-          <div class="user-info">
-            <div>
-              <h4><%= user.name %></h4>
-              <p class="email"><%= user.email %></p>
-            </div>
-            <div class="role" onmousedown="toggleSelect(this)">
-              <p>
-                <span id="role-<%= idx %>"><%= user.role %></span>
-                <i class="fa-sharp fa-solid fa-caret-down"></i>
+    <h1 class="title">Registered Users</h1>
+    <ul class="users">
+      <% users.forEach((user, idx) => { %>
+      <li>
+        <div class="user-info">
+          <div>
+            <h4><%= user.name %></h4>
+            <p class="email"><%= user.email %></p>
+          </div>
+          <div class="select">
+            <p>
+              <span id="role-<%= idx %>"><%= user.role %></span>
+              <i class="fa-sharp fa-solid fa-caret-down"></i>
+            </p>
+            <div class="options">
+              <% Object.entries(SELECT_ROLES).forEach(([_,value])=> { %>
+              <p
+                onmousedown="updateRole('<%=user.name%>','<%= value %>','<%= idx %>')"
+              >
+                <%= value %>
               </p>
-              <div class="options">
-                <% Object.entries(SELECT_ROLES).forEach(([_,value])=> { %>
-                <p
-                  onmousedown="updateRole('<%=user.email%>','<%= value %>','<%= idx %>')"
-                >
-                  <%= value %>
-                </p>
-                <% }) %>
-              </div>
+              <% }) %>
             </div>
           </div>
-        </li>
-        <% });%>
-      </ul>
-    </div>
+        </div>
+      </li>
+      <% }) %>
+    </ul>
     <%-include("partials/dashboard-layout-end") %>
   </body>
   <script>
-    function toggleSelect(elem) {
-      if (elem.classList.contains("active"))
-        return elem.classList.remove("active");
+    setupSelect();
 
-      elem.classList.add("active");
-
-      const listener = event => {
-        elem.classList.remove("active");
-
-        document.removeEventListener("mousedown", listener);
-      };
-
-      setTimeout(() => document.addEventListener("mousedown", listener), 1);
-    }
-
-    function updateRole(userEmail, role, roleIdx) {
-      console.log({ userEmail, role, roleIdx });
-
-      console.log(JSON.stringify({ userEmail, role }));
-
-      fetch("/update-role", {
+    function updateRole(userName, role, roleIdx) {
+      fetch("/update-user-role", {
         method: "POST",
-        body: JSON.stringify({ userEmail, role }),
+        body: JSON.stringify({ userName, role }),
         headers: {
           "Content-Type": "application/json"
         }
       })
         .then(res => {
           if (!res.ok) throw new Error("HTTP error " + res.status);
-
-          document.getElementById(`role-${roleIdx}`).innerText = role;
         })
         .catch(err => console.log(err));
     }
-
-    document.addEventListener("click", ev => {
-      const roles = [...document.querySelectorAll("[data-role]")];
-
-      // if (ev.target.dataset.roleIdx) {
-      //   const roleIdx = parseInt(ev.target.dataset.roleIdx);
-      //   const role = roles[roleIdx];
-
-      //   role.classList.toggle("active");
-
-      //   roles.splice(roleIdx, 1);
-      // }
-
-      roles.forEach(e => e.classList.remove("active"));
-    });
   </script>
 </html>

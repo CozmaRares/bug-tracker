@@ -20,47 +20,49 @@
     </main>
     <script src="/scripts/animatedLabel.js"></script>
     <script>
-      const error = "<% if (messages.error) { %><%= messages.error%><% } %>";
-      const email = "<% if (messages.email) { %><%= messages.email%><% } %>";
-      const username =
-        "<% if (messages.username) { %><%= messages.username %><% } %>";
+      {
+        const error = "<% if (messages.error) { %><%= messages.error%><% } %>";
+        const email = "<% if (messages.email) { %><%= messages.email%><% } %>";
+        const username =
+          "<% if (messages.username) { %><%= messages.username %><% } %>";
 
-      createAnimatedInput({
-        input: 1,
-        id: "email",
-        label: "email",
-        type: "email",
-        icon: "fa-solid fa-envelope",
-        error: error == "email",
-        errorText: "There is an user already registered with the given email",
-        initialValue: email
-      });
-      createAnimatedInput({
-        input: 2,
-        id: "username",
-        label: "username",
-        type: "text",
-        icon: "fa-solid fa-user",
-        initialValue: username
-      });
-      createAnimatedInput({
-        input: 3,
-        id: "password",
-        label: "password",
-        type: "password",
-        icon: "fa-solid fa-lock",
-        error: error == "passwords",
-        errorText: "Password don't match"
-      });
-      createAnimatedInput({
-        input: 4,
-        id: "passwordConfirm",
-        label: "confirm password",
-        type: "password",
-        icon: "fa-solid fa-lock",
-        error: error == "passwords",
-        errorText: "Password don't match"
-      });
+        createAnimatedInput({
+          input: 1,
+          id: "email",
+          label: "email",
+          type: "email",
+          icon: "fa-solid fa-envelope",
+          error: error == "email",
+          errorText: "There is an user already registered with the given email",
+          initialValue: email
+        });
+        createAnimatedInput({
+          input: 2,
+          id: "username",
+          label: "username",
+          type: "text",
+          icon: "fa-solid fa-user",
+          initialValue: username
+        });
+        createAnimatedInput({
+          input: 3,
+          id: "password",
+          label: "password",
+          type: "password",
+          icon: "fa-solid fa-lock",
+          error: error == "passwords",
+          errorText: "Password don't match"
+        });
+        createAnimatedInput({
+          input: 4,
+          id: "passwordConfirm",
+          label: "confirm password",
+          type: "password",
+          icon: "fa-solid fa-lock",
+          error: error == "passwords",
+          errorText: "Password don't match"
+        });
+      }
     </script>
   </body>
 </html>

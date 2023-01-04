@@ -22,11 +22,12 @@ SET
     FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE User (
-    email VARCHAR(255) PRIMARY KEY,
+    name VARCHAR(255) PRIMARY KEY,
     password VARCHAR(60) NOT NULL,
-    name VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
     role ENUM ('ADMIN', 'MANAGER', 'DEVELOPER', 'SUBMITTER') NOT NULL DEFAULT ('SUBMITTER'),
-    joinedAt DATE NOT NULL DEFAULT (CURRENT_DATE)
+    joinedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    KEY (email)
 );
 
 CREATE TABLE Project (
@@ -37,34 +38,34 @@ CREATE TABLE Project (
         'DEVELOPMENT',
         'PRODUCTION',
         'ABANDONED',
-        'ON_HOLD',
+        'ON HOLD',
         'CANCELED'
     ) NOT NULL DEFAULT ('PROPOSITION'),
     descriptionFileID VARCHAR(36) NOT NULL,
-    createdAt DATE NOT NULL DEFAULT (CURRENT_DATE),
-    updatedAt DATE NOT NULL DEFAULT (CURRENT_DATE),
-    managerEmail VARCHAR(255) NOT NULL,
-    FOREIGN KEY (managerEmail) REFERENCES User (email)
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    managerName VARCHAR(255) NOT NULL,
+    FOREIGN KEY (managerName) REFERENCES User (name)
 );
 
 CREATE TABLE ProjectMangerHistory (
     projectID VARCHAR(36),
-    managerEmail VARCHAR(255),
-    joinedAt DATE NOT NULL DEFAULT (CURRENT_DATE),
-    leftAt DATE,
-    FOREIGN KEY (managerEmail) REFERENCES User (email),
+    managerName VARCHAR(255),
+    joinedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    leftAt DATETIME,
+    FOREIGN KEY (managerName) REFERENCES User (name),
     FOREIGN KEY (projectID) REFERENCES Project (id),
-    PRIMARY KEY (managerEmail, projectID)
+    PRIMARY KEY (managerName, projectID, joinedAt)
 );
 
 CREATE TABLE ProjectDevHistory (
-    userEmail VARCHAR(255),
+    userName VARCHAR(255),
     projectID VARCHAR(36),
-    joinedAt DATE NOT NULL DEFAULT (CURRENT_DATE),
-    leftAt DATE,
-    FOREIGN KEY (userEmail) REFERENCES User (email),
+    joinedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    leftAt DATETIME,
+    FOREIGN KEY (userName) REFERENCES User (name),
     FOREIGN KEY (projectID) REFERENCES Project (id),
-    PRIMARY KEY (userEmail, projectID)
+    PRIMARY KEY (userName, projectID, joinedAt)
 );
 
 CREATE TABLE Ticket (
@@ -77,44 +78,44 @@ CREATE TABLE Ticket (
         'PENDING'
     ) NOT NULL DEFAULT ('PENDING'),
     priority ENUM ('HIGH', 'MEDIUM', 'LOW', 'UNKNOWN') NOT NULL DEFAULT 'UNKNOWN',
-    createdAt DATE NOT NULL DEFAULT (CURRENT_DATE),
-    updatedAt DATE NOT NULL DEFAULT (CURRENT_DATE),
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     descriptionFileID VARCHAR(36) NOT NULL,
     title VARCHAR(255) NOT NULL,
-    authorEmail VARCHAR(255) NOT NULL,
+    authorName VARCHAR(255) NOT NULL,
     projectID VARCHAR(36) NOT NULL,
     FOREIGN KEY (projectID) REFERENCES Project (id),
-    FOREIGN KEY (authorEmail) REFERENCES User (email)
+    FOREIGN KEY (authorName) REFERENCES User (name)
 );
 
 CREATE TABLE TicketAssignment (
-    userEmail VARCHAR(255),
+    userName VARCHAR(255),
     ticketID VARCHAR(36),
-    assignedAt DATE NOT NULL DEFAULT (CURRENT_DATE),
+    assignedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     completedAt DATE,
-    FOREIGN KEY (userEmail) REFERENCES User (email),
+    FOREIGN KEY (userName) REFERENCES User (name),
     FOREIGN KEY (ticketID) REFERENCES Ticket (id),
-    PRIMARY KEY (userEmail, ticketID)
+    PRIMARY KEY (userName, ticketID)
 );
 
 CREATE TABLE LongComment (
     id VARCHAR(36) PRIMARY KEY,
     contentFileID VARCHAR(36) NOT NULL,
-    createdAt DATE NOT NULL DEFAULT (CURRENT_DATE),
-    updatedAt DATE NOT NULL DEFAULT (CURRENT_DATE),
-    authorEmail VARCHAR(255) NOT NULL,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    authorName VARCHAR(255) NOT NULL,
     ticketID VARCHAR(36) NOT NULL,
-    FOREIGN KEY (authorEmail) REFERENCES User (email),
+    FOREIGN KEY (authorName) REFERENCES User (name),
     FOREIGN KEY (ticketID) REFERENCES Ticket (id)
 );
 
 CREATE TABLE ShortComment (
     id VARCHAR(36) PRIMARY KEY,
     content VARCHAR(255) NOT NULL,
-    createdAt DATE NOT NULL DEFAULT (CURRENT_DATE),
-    updatedAt DATE NOT NULL DEFAULT (CURRENT_DATE),
-    authorEmail VARCHAR(255) NOT NULL,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    authorName VARCHAR(255) NOT NULL,
     ticketID VARCHAR(36) NOT NULL,
-    FOREIGN KEY (authorEmail) REFERENCES User (email),
+    FOREIGN KEY (authorName) REFERENCES User (name),
     FOREIGN KEY (ticketID) REFERENCES Ticket (id)
 );

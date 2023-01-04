@@ -27,10 +27,19 @@ body {
   font-family: "Roboto Mono", monospace;
 }
 
+ul {
+  list-style: none;
+}
+
 .spacer {
   padding: 1rem;
 }
 
-.spacer-lg {
-  padding: 2rem;
+.title {
+  width: fit-content;
+  padding: 1.25rem;
+  margin: 2rem auto;
+  background-color: var(--secondary-bg);
+  border-radius: 20px;
+  font-weight: 600;
 }

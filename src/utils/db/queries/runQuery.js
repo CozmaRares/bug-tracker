@@ -22,6 +22,7 @@ function runQuery(query, cb) {
         .filter(str => str.length != 0)
         .join(" ")
     });
+
     cb(data);
   });
 }

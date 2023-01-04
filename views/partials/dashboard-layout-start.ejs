@@ -10,24 +10,34 @@
         <p><%= role.toUpperCase() %></p>
       </div>
     </div>
-    <div class="spacer-lg"></div>
+    <div class="spacer"></div>
     <ul class="links">
-      <a href="/" data-home>
-        <li>
-          <div>
-            <i class="fa-solid fa-house"></i>
-          </div>
-          dashboard
-        </li>
-      </a>
-      <a href="/" data-submit>
-        <li>
-          <div>
-            <i class="fa-solid fa-arrow-up-from-bracket"></i>
-          </div>
-          submit a ticket
-        </li>
-      </a>
+      <div>
+        <a href="/" data-home>
+          <li>
+            <div>
+              <i class="fa-solid fa-house"></i>
+            </div>
+            dashboard
+          </li>
+        </a>
+        <a href="/submit-ticket" data-submit-ticket>
+          <li>
+            <div>
+              <i class="fa-solid fa-arrow-up-from-bracket"></i>
+            </div>
+            submit a ticket
+          </li>
+        </a>
+        <a href="/submit-project" data-submit-project>
+          <li>
+            <div>
+              <i class="fa-solid fa-plus"></i>
+            </div>
+            add a project idea
+          </li>
+        </a>
+      </div>
       <%- include("manager-dashboard-options", { role, USER_ROLE }) %>
       <div>
         <h6>my work</h6>

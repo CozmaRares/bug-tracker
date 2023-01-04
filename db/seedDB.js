@@ -19,12 +19,12 @@ const users = [
   {
     email: "dev1@dev1",
     password: "dev1",
-    name: "developer1"
+    name: "dev1"
   },
   {
     email: "dev2@dev2",
     password: "dev2",
-    name: "developer2"
+    name: "dev2"
   },
   {
     email: "submitter@submitter",
@@ -40,23 +40,23 @@ const users = [
 
 const userRoleUpdates = [
   {
-    email: "admin@admin",
+    name: "admin",
     role: dbEnums.USER_ROLE.ADMIN
   },
   {
-    email: "manager@manager",
+    name: "manager",
     role: dbEnums.USER_ROLE.MANAGER
   },
   {
-    email: "dev1@dev1",
+    name: "dev1",
     role: dbEnums.USER_ROLE.DEVELOPER
   },
   {
-    email: "dev2@dev2",
+    name: "dev2",
     role: dbEnums.USER_ROLE.DEVELOPER
   },
   {
-    email: "a@a",
+    name: "a",
     role: dbEnums.USER_ROLE.ADMIN
   }
 ];
@@ -64,14 +64,14 @@ const userRoleUpdates = [
 const projects = [
   {
     name: "Bug Tracker",
-    managerEmail: "manager@manager",
+    managerName: "manager",
     description: fs.readFileSync(
       path.join(__dirname, "descriptions", "projects", "bug_tracker.md")
     )
   },
   {
     name: "Virtual Assistant Raspberry Pi",
-    managerEmail: "manager@manager",
+    managerName: "manager",
     description: fs.readFileSync(
       path.join(__dirname, "descriptions", "projects", "tts.md")
     )
@@ -82,7 +82,7 @@ const projectUpdates = [
   {
     project: projects[0],
     status: dbEnums.PROJECT_STATUS.DEVELOPMENT,
-    managerEmail: "admin@admin"
+    managerName: "admin"
   },
   {
     project: projects[1],
@@ -92,26 +92,26 @@ const projectUpdates = [
 
 const projectDevs = [
   {
-    userEmail: "manager@manager",
+    userName: "manager",
     project: projects[0]
   },
   {
-    userEmail: "dev1@dev1",
+    userName: "dev1",
     project: projects[0]
   },
   {
-    userEmail: "dev2@dev2",
+    userName: "dev2",
     project: projects[1]
   },
   {
-    userEmail: "admin@admin",
+    userName: "admin",
     project: projects[0]
   }
 ];
 
 const projectDevMoves = [
   {
-    userEmail: "manager@manager",
+    userName: "manager",
     oldProject: projects[0],
     newProject: projects[1]
   }
@@ -125,7 +125,7 @@ const tickets = [
       path.join(__dirname, "descriptions", "posts", "pages.md")
     ),
     project: projects[0],
-    authorEmail: "submitter@submitter"
+    authorName: "submitter"
   },
   {
     type: dbEnums.TICKET_TYPE.BUG,
@@ -134,17 +134,17 @@ const tickets = [
       path.join(__dirname, "descriptions", "posts", "responses.md")
     ),
     project: projects[0],
-    authorEmail: "admin@admin"
+    authorName: "admin"
   }
 ];
 
 const ticketAssignments = [
   {
-    userEmail: "admin@admin",
+    userName: "admin",
     ticket: tickets[0]
   },
   {
-    userEmail: "dev1@dev1",
+    userName: "dev1",
     ticket: tickets[1]
   }
 ];
@@ -165,17 +165,17 @@ const ticketUpdates = [
 const shortComments = [
   {
     content: "Ticket assigned to dev1",
-    authorEmail: "admin@admin",
+    authorName: "admin",
     ticket: tickets[0]
   },
   {
     content: "Ticket completed",
-    authorEmail: "admin@admin",
+    authorName: "admin",
     ticket: tickets[0]
   },
   {
     content: "Ticket assigned to admin",
-    authorEmail: "admin@admin",
+    authorName: "admin",
     ticket: tickets[1]
   }
 ];
@@ -195,7 +195,7 @@ function updateUserRoles() {
   const promises = [];
 
   userRoleUpdates.forEach(update => {
-    const promise = db.user.updateRole(update.email, update.role);
+    const promise = db.user.updateRole(update.name, update.role);
     promises.push(promise);
   });
 
@@ -225,8 +225,8 @@ function updateProjects() {
     if (update.status)
       promises.push(db.project.updateStatus(id, update.status));
 
-    if (update.managerEmail)
-      promises.push(db.project.updateManager(id, update.managerEmail));
+    if (update.managerName)
+      promises.push(db.project.updateManager(id, update.managerName));
   });
 
   return Promise.all(promises);
@@ -236,7 +236,7 @@ function createProjectDevHistory() {
   const promises = [];
 
   projectDevs.forEach(async entry => {
-    promises.push(db.project.addDev(entry.userEmail, entry.project.id));
+    promises.push(db.project.addDev(entry.userName, entry.project.id));
   });
 
   return Promise.all(promises);
@@ -248,7 +248,7 @@ function updateProjectDevHistory() {
   projectDevMoves.forEach(update => {
     promises.push(
       db.project.moveDev(
-        update.userEmail,
+        update.userName,
         update.oldProject.id,
         update.newProject.id
       )
@@ -279,7 +279,7 @@ function createTicketAssignments() {
   const promises = [];
 
   ticketAssignments.forEach(entry => {
-    promises.push(db.ticket.assign(entry.ticket.id, entry.userEmail));
+    promises.push(db.ticket.assign(entry.ticket.id, entry.userName));
   });
 
   return Promise.all(promises);

@@ -1,14 +1,4 @@
-.main h1 {
-  font-weight: 600;
-  padding: 1.25rem;
-  margin: 2rem auto;
-  background-color: var(--secondary-bg);
-  border-radius: 20px;
-  width: fit-content;
-}
-
 .users {
-  list-style: none;
   /* text-xl */
   font-size: 1.25rem;
   line-height: 1.75rem;
@@ -35,63 +25,4 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-style: italic;
-}
-
-.role {
-  /* text-base */
-  font-size: 1rem;
-  line-height: 1.5rem;
-  position: relative;
-  cursor: pointer;
-}
-
-.role > p {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: /* gray-200 */ #e5e7eb;
-  padding: 0.5rem;
-  border-radius: 5px;
-}
-
-.role > p span {
-  display: block;
-  width: 100px;
-}
-
-.role i {
-  transition-property: transform;
-}
-
-.options {
-  position: absolute;
-  background-color: /* gray-200 */ #e5e7eb;
-  padding: 0.5rem;
-  border-radius: 10px;
-  z-index: 1;
-
-  top: 25%;
-  pointer-events: none;
-  opacity: 0;
-  transition-property: opacity, top;
-}
-
-.options > * {
-  padding: 0.5rem;
-  border-radius: 5px;
-}
-
-.options > *:hover {
-  background-color: /* neutral-700 */ #404040;
-  color: white;
-}
-
-.role.active .options {
-  opacity: 1;
-  pointer-events: auto;
-  top: 102%;
-}
-
-.role.active i {
-  transform: rotate(180deg);
 }

@@ -20,16 +20,17 @@ function create(user) {
     runQuery(query, data =>
       resolve({
         data,
-        email: user.email
+        name: user.name
       })
     )
   );
 }
 
-function getAll() {
+function getAll(...columns) {
   const query = `
-    SELECT *
-    FROM User;
+    SELECT ${columns.length == 0 ? "*" : columns.join(", ")}
+    FROM User
+    ORDER BY name
   `;
 
   return new Promise(resolve => runQuery(query, data => resolve(data)));
@@ -50,46 +51,59 @@ function getByEmail(email) {
   );
 }
 
-function updateRole(email, role) {
+function getByName(name) {
+  const query = `
+    SELECT * 
+    FROM User
+    WHERE name = '${name}'
+  `;
+
+  return new Promise(resolve =>
+    runQuery(query, data => {
+      if (data.length) resolve(data[0]);
+      else resolve(null);
+    })
+  );
+}
+
+function updateRole(name, role) {
   const query = `
     UPDATE User
     SET role='${role}'
-    WHERE email='${email}'
+    WHERE name='${name}'
   `;
 
   return new Promise(resolve => runQuery(query, data => resolve(data)));
 }
 
-function getAssignedProjects(userEmail) {
+function getAssignedProjects(userName) {
   const query = `
-    SELECT Project.*, User.name managerUserName
+    SELECT Project.*
     FROM Project
     JOIN ProjectDevHistory ON Project.id = ProjectDevHistory.projectID
-    JOIN User ON Project.managerEmail = User.email
-    WHERE userEmail = '${userEmail}'
+    WHERE userName = '${userName}'
       AND leftAt IS NULL
   `;
 
   return new Promise(resolve => runQuery(query, data => resolve(data)));
 }
 
-function getManagedProjects(userEmail) {
+function getManagedProjects(userName) {
   const query = `
-    SELECT Project.*, User.name managerUserName
+    SELECT *
     FROM Project
-    JOIN User ON Project.managerEmail = User.email
-    WHERE managerEmail = '${userEmail}'
+    WHERE managerName = '${userName}'
   `;
 
   return new Promise(resolve => runQuery(query, data => resolve(data)));
 }
 
-function getAssignedTickets(userEmail) {
+function getAssignedTickets(userName) {
   const query = `
     SELECT Ticket.*
     FROM Ticket
     JOIN TicketAssignment ON Ticket.id = TicketAssignment.ticketID
-    WHERE userEmail='${userEmail}'
+    WHERE userName='${userName}'
   `;
 
   return new Promise(resolve => runQuery(query, data => resolve(data)));
@@ -98,6 +112,7 @@ function getAssignedTickets(userEmail) {
 module.exports = {
   create,
   getAll,
+  getByName,
   getByEmail,
   updateRole,
   getAssignedProjects,

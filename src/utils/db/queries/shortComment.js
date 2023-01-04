@@ -10,13 +10,13 @@ function create(comment) {
       ShortComment(
           id,
           content,
-          authorEmail,
+          authorName,
           ticketID
         )
       VALUES(
         '${id}',
         '${comment.content}',
-        '${comment.authorEmail}',
+        '${comment.authorName}',
         '${comment.ticketID}'
       )
     `;

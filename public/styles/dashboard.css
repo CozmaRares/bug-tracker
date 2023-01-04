@@ -61,7 +61,6 @@
   line-height: 1.75rem;
   text-transform: capitalize;
   flex-direction: column;
-  list-style: none;
 }
 
 .links h6 {
@@ -163,4 +162,5 @@
 
 main {
   overflow: auto;
+  padding-top: 2rem;
 }

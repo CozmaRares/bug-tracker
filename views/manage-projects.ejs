@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head") %>
+    <link rel="stylesheet" href="/styles/dashboard.css" />
+    <link rel="stylesheet" href="/styles/manage-projects.css" />
+    <link rel="stylesheet" href="/styles/utils/projects.css" />
+    <link rel="stylesheet" href="/styles/utils/select.css" />
+    <script src="/scripts/select.js"></script>
+  </head>
+  <body>
+    <%- include("partials/dashboard-layout-start", { username, role, USER_ROLE,
+    dataAttribute:"manage-projects" }) %>
+    <div>
+      <h1 class="title">Modify <span>Project</span></h1>
+      <div class="modify" data-modify></div>
+    </div>
+    <div class="projects">
+      <h2 class="title">Projects</h2>
+      <% if(projects.length == 0) {%>
+      <p>No projects.</p>
+      <% } else { %>
+      <ul>
+        <% projects.forEach(project => {%>
+        <li class="project">
+          <h3>
+            <a href="/project/<%= project.id %>"><%= project.name %></a>
+          </h3>
+          <h6>Status: <%= project.status.toUpperCase() %></h6>
+          <h4>Managed by <%= project.managerName %></h4>
+          <p>Created at <%= project.createdAt %></p>
+          <div class="assigned-devs">
+            <span>Assigned devs:</span>
+            <ul>
+              <% project.assignedDevs.forEach(dev => { %>
+              <li><%= dev %></li>
+              <% }) %>
+            </ul>
+          </div>
+
+          <button onclick="loadProject('<%= project.id %>')">Modify</button>
+        </li>
+        <% }) %>
+      </ul>
+      <% } %>
+    </div>
+    <%-include("partials/dashboard-layout-end") %>
+  </body>
+  <script>
+    const projects = JSON.parse(
+      "<%= JSON.stringify(projects)%>".replaceAll("&#34;", '"')
+    );
+
+    const registeredDevs = JSON.parse(
+      "<%= JSON.stringify(devs)%>".replaceAll("&#34;", '"')
+    );
+
+    let selectedProject;
+
+    function modifyStatus(status) {
+      selectedProject.status = status;
+    }
+
+    function modifyManager(manager) {
+      selectedProject.managerName = manager;
+    }
+
+    function addDev(devName) {
+      selectedProject.assignedDevs.push(devName);
+      selectedProject.assignedDevs = selectedProject.assignedDevs.sort();
+
+      refreshDevs();
+    }
+
+    function removeDev(devName) {
+      selectedProject.assignedDevs = selectedProject.assignedDevs.filter(
+        dev => dev != devName
+      );
+
+      refreshDevs();
+    }
+
+    function refreshDevs() {
+      const notAssignedDevs = registeredDevs.filter(
+        dev => selectedProject.assignedDevs.indexOf(dev) == -1
+      );
+
+      document.querySelector("[data-dev-list]").innerHTML = `
+        ${selectedProject.assignedDevs
+          .map(
+            dev =>
+              `<li class="assigned" onmousedown="removeDev('${dev}')">
+                <i class="fa-solid fa-minus"></i>
+                  ${dev}
+              </li>`
+          )
+          .join("")}
+          <div class="line"></div>
+        ${notAssignedDevs
+          .map(
+            dev =>
+              `<li class="not-assigned" onmousedown="addDev('${dev}')">
+                <i class="fa-solid fa-plus"></i>
+                  ${dev}
+              </li>`
+          )
+          .join("")}
+      `;
+    }
+
+    async function submitChanges() {
+      selectedProject.description =
+        document.querySelector("[data-description]").value;
+
+      fetch("/modify-project", {
+        method: "POST",
+        body: JSON.stringify(selectedProject),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error("HTTP error " + res.status);
+
+          location.reload();
+        })
+        .catch(err => console.log(err));
+    }
+
+    async function loadProject(id) {
+      const description = await fetch("/project/description/" + id)
+        .then(data => data.json())
+        .then(json => json.description)
+        .catch(err => {
+          console.log(err);
+        });
+
+      selectedProject = { ...projects.find(project => project.id == id) };
+
+      document.querySelector("[data-modify]").innerHTML = `
+        <p>
+          Name:
+          <input type="text" name="name" value="${selectedProject.name}" />
+        </p>
+        <div>
+          Status:
+          <div class="select">
+            <p>
+              <span>${selectedProject.status}</span>
+              <i class="fa-sharp fa-solid fa-caret-down"></i>
+            </p>
+            <div class="options">
+              <% Object.entries(PROJECT_STATUS).forEach(([_,value])=> { %>
+              <p onmousedown="modifyStatus('<%= value %>')"><%= value %></p>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+        <div>
+          Manager:
+          <div class="select">
+            <p>
+              <span>${selectedProject.managerName}</span>
+              <i class="fa-sharp fa-solid fa-caret-down"></i>
+            </p>
+            <div class="options">
+              <% Object.entries(managers).forEach(([_,value])=> { %>
+              <p onmousedown="modifyManager('<%= value %>')"><%= value %></p>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+        <div class="devs">
+          Devs:
+          <ul data-dev-list>
+          </ul>
+        </div>
+        <div>
+         <p>Description</p>
+          <textarea rows="15" data-description>${description}</textarea>
+        </div>
+        <button onmousedown="submitChanges()">Submit Changes</button>
+      `;
+
+      setTimeout(setupSelect, 1);
+      refreshDevs();
+    }
+
+    document.querySelector("main button").click();
+  </script>
+</html>

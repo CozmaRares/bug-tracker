@@ -4,7 +4,7 @@ USER_ROLE.MANAGER) { %>
   <h6>management</h6>
   <% if(role.toUpperCase() === "ADMIN") { %> <%-
   include("admin-dashboard-options") %> <% } %>
-  <a href="/manage-projects" data-projects>
+  <a href="/manage-projects" data-manage-projects>
     <li>
       <div>
         <i class="fa-solid fa-desktop"></i>
@@ -12,7 +12,7 @@ USER_ROLE.MANAGER) { %>
       manage projects
     </li>
   </a>
-  <a href="/manage-tickets" data-tickets>
+  <a href="/manage-tickets" data-manage-tickets>
     <li>
       <div>
         <i class="fa-solid fa-ticket"></i>

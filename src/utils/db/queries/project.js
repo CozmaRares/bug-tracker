@@ -1,11 +1,11 @@
 const crypto = require("crypto");
 
-const { createDescriptionFile } = require("../../utils");
+const { createMarkdownFile } = require("../../utils");
 const { runQuery } = require("./runQuery");
 
 async function create(project) {
   const id = crypto.randomUUID();
-  const descriptionFileID = createDescriptionFile(project.description);
+  const descriptionFileID = createMarkdownFile(project.description);
 
   const query = `
     INSERT INTO
@@ -13,13 +13,13 @@ async function create(project) {
         id,
         name,
         descriptionFileID,
-        managerEmail
+        managerName
       )
     VALUES(
       '${id}',
       '${project.name}',
       '${descriptionFileID}',
-      '${project.managerEmail}'
+      '${project.managerName}'
     )
   `;
 
@@ -33,18 +33,22 @@ async function create(project) {
   );
 
   await createProjectManagerHistoryEntry({
-    managerEmail: project.managerEmail,
+    managerName: project.managerName,
     projectID: id
   });
 
   return ret;
 }
 
-function getAll() {
+function getAll(...columns) {
   const query = `
-    SELECT Project.*, User.name managerUserName 
+    SELECT ${
+      columns.length == 0
+        ? "Project.*"
+        : columns.map(column => `Project.${column}`).join(", ")
+    }
     FROM Project
-    JOIN User ON Project.managerEmail = User.email
+    ORDER BY name
   `;
 
   return new Promise(resolve => runQuery(query, data => resolve(data)));
@@ -65,44 +69,64 @@ function getById(id) {
   );
 }
 
-async function updateManager(id, managerEmail) {
+function getAssignedDevs(projectID) {
+  const query = `
+    SELECT User.*
+    FROM User
+    JOIN ProjectDevHistory ON User.name = ProjectDevHistory.userName
+    WHERE projectID = '${projectID}' 
+      AND leftAt IS NULL
+  `;
+
+  return new Promise(resolve => runQuery(query, data => resolve(data)));
+}
+
+async function updateManager(projectID, managerName) {
   const query = `
     UPDATE Project
-    SET managerEmail='${managerEmail}', 
-      updatedAt=CURRENT_DATE
-    WHERE id='${id}'
+    SET managerName='${managerName}'
+    WHERE id='${projectID}'
   `;
 
   const ret = await new Promise(resolve =>
     runQuery(query, data => resolve(data))
   );
 
-  await updateProjectManagerHistoryEntry(id);
+  await updateProjectManagerHistoryEntry(projectID);
   await createProjectManagerHistoryEntry({
-    managerEmail,
-    projectID: id
+    managerName,
+    projectID: projectID
   });
 
   return ret;
 }
 
-function updateStatus(id, status) {
+function updateName(projectID, name) {
   const query = `
     UPDATE Project
-    SET status='${status}', 
-      updatedAt=CURRENT_DATE
-    WHERE id='${id}'
+    SET name='${name}'
+    WHERE id='${projectID}'
   `;
 
   return new Promise(resolve => runQuery(query, data => resolve(data)));
 }
 
-function isUserAssigned(projectID, userEmail) {
+function updateStatus(projectID, status) {
+  const query = `
+    UPDATE Project
+    SET status='${status}'
+    WHERE id='${projectID}'
+  `;
+
+  return new Promise(resolve => runQuery(query, data => resolve(data)));
+}
+
+function isDevAssigned(projectID, userName) {
   const query = `
     SELECT *
     FROM ProjectDevHistory
     WHERE projectID = '${projectID}' 
-      AND userEmail = '${userEmail}'
+      AND userName = '${userName}'
       AND leftAt IS NULL
   `;
 
@@ -115,11 +139,11 @@ function createProjectManagerHistoryEntry(entry) {
   const query = `
     INSERT INTO
     ProjectMangerHistory(
-      managerEmail,
+      managerName,
       projectID
     )
     VALUES(
-      '${entry.managerEmail}',
+      '${entry.managerName}',
       '${entry.projectID}'
     )
   `;
@@ -128,7 +152,7 @@ function createProjectManagerHistoryEntry(entry) {
     runQuery(query, data =>
       resolve({
         data,
-        managerEmail: entry.managerEmail,
+        managerName: entry.managerName,
         projectID: entry.projectID
       })
     )
@@ -138,7 +162,7 @@ function createProjectManagerHistoryEntry(entry) {
 function updateProjectManagerHistoryEntry(projectID) {
   const query = `
     UPDATE ProjectMangerHistory
-    SET leftAt=CURRENT_DATE
+    SET leftAt=CURRENT_TIMESTAMP
     WHERE leftAt IS NULL
       AND projectID='${projectID}'
   `;
@@ -153,15 +177,15 @@ function updateProjectManagerHistoryEntry(projectID) {
   );
 }
 
-function addDev(userEmail, projectID) {
+function addDev(userName, projectID) {
   const query = `
     INSERT INTO
     ProjectDevHistory(
-        userEmail,
+        userName,
         projectID
     )
     VALUES(
-    '${userEmail}',
+    '${userName}',
     '${projectID}'
     )
   `;
@@ -170,36 +194,36 @@ function addDev(userEmail, projectID) {
     runQuery(query, data =>
       resolve({
         data,
-        userEmail: userEmail,
+        userName: userName,
         projectID: projectID
       })
     )
   );
 }
 
-function removeDev(userEmail, projectID) {
+function removeDev(userName, projectID) {
   const query = `
     UPDATE ProjectDevHistory
-    SET leftAt=CURRENT_DATE
+    SET leftAt=CURRENT_TIMESTAMP
     WHERE leftAt IS NULL
       AND projectID='${projectID}'
-      AND userEmail='${userEmail}'
+      AND userName='${userName}'
   `;
 
   return new Promise(resolve => runQuery(query, data => resolve(data)));
 }
 
-async function moveDev(userEmail, oldProjectID, newProjectID) {
-  await removeDev(userEmail, oldProjectID);
+async function moveDev(userName, oldProjectID, newProjectID) {
+  await removeDev(userName, oldProjectID);
 
-  return addDev(userEmail, newProjectID);
+  return addDev(userName, newProjectID);
 }
 
-function getTickets(projectId) {
+function getTickets(projectID) {
   const query = `
     SELECT *
     FROM Ticket
-    WHERE projectID ='${projectId}'
+    WHERE projectID ='${projectID}'
   `;
 
   return new Promise(resolve => runQuery(query, data => resolve(data)));
@@ -211,9 +235,11 @@ module.exports = {
   updateStatus,
   getAll,
   getById,
-  isUserAssigned,
+  isDevAssigned,
   addDev,
+  updateName,
   removeDev,
   moveDev,
-  getTickets
+  getTickets,
+  getAssignedDevs
 };

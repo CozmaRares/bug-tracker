@@ -7,7 +7,12 @@ const flash = require("express-flash");
 const session = require("express-session");
 const methodOverride = require("method-override");
 
-const { hashPassword } = require("./utils/utils");
+const {
+  hashPassword,
+  formatDates,
+  updateMarkdownFile,
+  loadMarkdownFile
+} = require("./utils/utils");
 const {
   checkAuthenticated,
   checkNotAuthenticated,
@@ -90,12 +95,12 @@ app.get("/", async (req, res) => {
 
   switch (req.user.role) {
     case dbEnums.USER_ROLE.DEVELOPER:
-      projectPromise = db.user.getAssignedProjects(req.user.email);
-      ticketPromise = db.user.getAssignedTickets(req.user.email);
+      projectPromise = db.user.getAssignedProjects(req.user.name);
+      ticketPromise = db.user.getAssignedTickets(req.user.name);
       break;
     case dbEnums.USER_ROLE.MANAGER:
-      projectPromise = db.user.getManagedProjects(req.user.email);
-      ticketPromise = db.project.getTickets(req.user.email);
+      projectPromise = db.user.getManagedProjects(req.user.name);
+      ticketPromise = db.project.getTickets(req.user.name);
       break;
     case dbEnums.USER_ROLE.ADMIN:
       projectPromise = db.project.getAll();
@@ -128,12 +133,8 @@ app.get("/", async (req, res) => {
     ticketsData.status[ticket.status]++;
   });
 
-  projects.forEach(project => {
-    project.createdAt = project.createdAt.toLocaleDateString();
-  });
-
   res.render("index", {
-    projects,
+    projects: projects.map(formatDates),
     ticketsData,
     username: req.user.name,
     role: req.user.role,
@@ -168,18 +169,121 @@ app.get(
 );
 
 app.post(
-  "/update-role",
+  "/update-user-role",
   userRole(dbEnums.USER_ROLE.ADMIN),
   async (req, res) => {
-    await db.user.updateRole(req.body.userEmail, req.body.role);
+    await db.user.updateRole(req.body.userName, req.body.role);
+
+    res.status(204).send();
+  }
+);
+
+app.get(
+  "/manage-projects",
+  userRole(dbEnums.USER_ROLE.MANAGER, dbEnums.USER_ROLE.ADMIN),
+  async (req, res) => {
+    const projects = await db.project.getAll(
+      "id",
+      "name",
+      "status",
+      "managerName",
+      "createdAt"
+    );
+
+    const promises = [];
+
+    projects.forEach(async project => {
+      const promise = db.project
+        .getAssignedDevs(project.id)
+        .then(data => (project.assignedDevs = data.map(dev => dev.name)))
+        .catch(err => {
+          throw err;
+        });
+
+      promises.push(promise);
+    });
+
+    const users = await db.user.getAll("name", "role");
+
+    await Promise.all(promises);
+
+    res.render("manage-projects", {
+      projects: projects.map(formatDates),
+      username: req.user.name,
+      role: req.user.role,
+      USER_ROLE: dbEnums.USER_ROLE,
+      PROJECT_STATUS: dbEnums.PROJECT_STATUS,
+      devs: users
+        .filter(user => user.role != dbEnums.USER_ROLE.SUBMITTER)
+        .map(user => user.name),
+      managers: users
+        .filter(
+          user =>
+            user.role == dbEnums.USER_ROLE.MANAGER ||
+            user.role == dbEnums.USER_ROLE.ADMIN
+        )
+        .map(user => user.name)
+    });
+  }
+);
+
+app.post(
+  "/modify-project",
+  userRole(dbEnums.USER_ROLE.MANAGER, dbEnums.USER_ROLE.ADMIN),
+  async (req, res) => {
+    const [project, assignedDevs] = await Promise.all([
+      db.project.getById(req.body.id),
+      db.project
+        .getAssignedDevs(req.body.id)
+        .then(devs => devs.map(dev => dev.name))
+    ]);
+
+    const newManager = req.body.managerName;
+    const newDevs = req.body.assignedDevs;
+
+    const promises = [];
+
+    if (req.body.name != project.name)
+      promises.push(db.project.updateName(project.id, req.body.name));
+
+    if (newManager != project.managerName)
+      promises.push(db.project.updateManager(project.id, newManager));
+
+    if (req.body.status != project.status)
+      promises.push(db.project.updateStatus(project.id, req.body.status));
+
+    assignedDevs.forEach(dev => {
+      if (newDevs.indexOf(dev) == -1)
+        promises.push(db.project.removeDev(dev, project.id));
+    });
+
+    newDevs.forEach(dev => {
+      if (assignedDevs.indexOf(dev) == -1)
+        promises.push(db.project.addDev(dev, project.id));
+    });
+
+    updateMarkdownFile(project.descriptionFileID, req.body.description);
+
+    await Promise.all(promises);
 
     res.status(204).send();
   }
 );
 
 app.get("/project/:projectID", setProject, authGetProject, (req, res) => {
-  res.send(req.project);
+  res.json(req.project);
 });
+
+app.get(
+  "/project/description/:projectID",
+  setProject,
+  authGetProject,
+  async (req, res) => {
+    const description = await loadMarkdownFile(req.project.descriptionFileID);
+
+    res.json({ description });
+  }
+);
 
 app.all("*", (req, res) => {
   res.status(404).redirect("/");

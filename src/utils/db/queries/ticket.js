@@ -1,11 +1,11 @@
 const crypto = require("crypto");
 
 const { TICKET_STATUS } = require("../enums");
-const { createDescriptionFile } = require("../../utils");
+const { createMarkdownFile } = require("../../utils");
 const { runQuery } = require("./runQuery");
 
 function create(ticket) {
-  const descriptionFileID = createDescriptionFile(ticket.description);
+  const descriptionFileID = createMarkdownFile(ticket.description);
   const id = crypto.randomUUID();
 
   const query = `
@@ -16,7 +16,7 @@ function create(ticket) {
           title,
           descriptionFileID,
           projectID,
-          authorEmail
+          authorName
         )
       VALUES(
         '${id}',
@@ -24,7 +24,7 @@ function create(ticket) {
         '${ticket.title}',
         '${descriptionFileID}',
         '${ticket.projectID}',
-        '${ticket.authorEmail}'
+        '${ticket.authorName}'
       )
     `;
 
@@ -38,10 +38,11 @@ function create(ticket) {
   );
 }
 
-function getAll() {
+function getAll(...columns) {
   const query = `
-    SELECT *
+    SELECT ${columns.length == 0 ? "*" : columns.join(", ")}
     FROM Ticket
+    ORDER BY title
   `;
 
   return new Promise(resolve => runQuery(query, data => resolve(data)));
@@ -50,8 +51,7 @@ function getAll() {
 function updateType(id, type) {
   const query = `
       UPDATE Ticket
-      SET type='${type}', 
-        updatedAt=CURRENT_DATE
+      SET type='${type}'
       WHERE id='${id}'
     `;
 
@@ -61,8 +61,7 @@ function updateType(id, type) {
 async function updateStatus(id, status) {
   const query = `
       UPDATE Ticket
-      SET status='${status}', 
-        updatedAt=CURRENT_DATE
+      SET status='${status}'
       WHERE id='${id}'
     `;
 
@@ -74,22 +73,21 @@ async function updateStatus(id, status) {
 function updatePriority(id, priority) {
   const query = `
         UPDATE Ticket
-        SET priority='${priority}', 
-          updatedAt=CURRENT_DATE
+        SET priority='${priority}'
         WHERE id='${id}'
     `;
 
   return new Promise(resolve => runQuery(query, data => resolve(data)));
 }
 
-async function assign(ticketID, ...userEmails) {
+async function assign(ticketID, ...userNames) {
   const promises = [];
 
-  userEmails.forEach(userEmail =>
+  userNames.forEach(userName =>
     promises.push(
       createTicketAssignmentEntry({
         ticketID: ticketID,
-        userEmail: userEmail
+        userName: userName
       })
     )
   );
@@ -101,11 +99,11 @@ function createTicketAssignmentEntry(entry) {
   const query = `
       INSERT INTO
         TicketAssignment(
-          userEmail,
+          userName,
           ticketID
         )
       VALUES(
-        '${entry.userEmail}',
+        '${entry.userName}',
         '${entry.ticketID}'
       )
     `;
@@ -114,7 +112,7 @@ function createTicketAssignmentEntry(entry) {
     runQuery(query, data =>
       resolve({
         data,
-        userEmail: entry.userEmail,
+        userName: entry.userName,
         ticketID: entry.ticketID
       })
     )
@@ -124,7 +122,7 @@ function createTicketAssignmentEntry(entry) {
 function updateTicketAssignmentEntry(ticketID) {
   const query = `
       UPDATE TicketAssignment
-      SET completedAt=CURRENT_DATE
+      SET completedAt=CURRENT_TIMESTAMP
       WHERE ticketID='${ticketID}'
     `;
 

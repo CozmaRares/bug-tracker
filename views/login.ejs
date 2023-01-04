@@ -14,6 +14,7 @@
         <div data-input="1"></div>
         <div data-input="2"></div>
         <button type="submit">Login</button>
+        <div class="spacer"></div>
         <div>
           <p>
             Don't have an account?
@@ -24,27 +25,29 @@
     </main>
     <script src="/scripts/animatedLabel.js"></script>
     <script>
-      const error = "<%= messages.error %>";
+      {
+        const error = "<%= messages.error %>";
 
-      createAnimatedInput({
-        input: 1,
-        id: "email",
-        label: "email",
-        type: "email",
-        icon: "fa-solid fa-envelope",
-        error: error === "email",
-        errorText: "No user found with the given email address"
-      });
+        createAnimatedInput({
+          input: 1,
+          id: "email",
+          label: "email",
+          type: "email",
+          icon: "fa-solid fa-envelope",
+          error: error === "email",
+          errorText: "No user found with the given email address"
+        });
 
-      createAnimatedInput({
-        input: 2,
-        id: "password",
-        label: "password",
-        type: "password",
-        icon: "fa-solid fa-lock",
-        error: error === "password",
-        errorText: "Password is incorrect"
-      });
+        createAnimatedInput({
+          input: 2,
+          id: "password",
+          label: "password",
+          type: "password",
+          icon: "fa-solid fa-lock",
+          error: error === "password",
+          errorText: "Password is incorrect"
+        });
+      }
     </script>
   </body>
 </html>

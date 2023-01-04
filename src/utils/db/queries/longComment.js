@@ -1,10 +1,10 @@
 const crypto = require("crypto");
 
-const { createDescriptionFile } = require("../../utils");
+const { createMarkdownFile } = require("../../utils");
 const { runQuery } = require("./runQuery");
 
 function create(comment) {
-  const contentFileID = createDescriptionFile(comment.description);
+  const contentFileID = createMarkdownFile(comment.description);
   const id = crypto.randomUUID();
 
   const query = `
@@ -12,13 +12,13 @@ function create(comment) {
         LongComment(
           id,
           contentFileID,
-          authorEmail,
+          authorName,
           ticketID
         )
       VALUES(
         '${id}',
         '${contentFileID}',
-        '${comment.authorEmail}',
+        '${comment.authorName}',
         '${comment.ticketID}'
       )
     `;
