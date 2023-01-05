@@ -17,7 +17,6 @@ const {
   checkAuthenticated,
   checkNotAuthenticated,
   setProject,
-  authGetProject,
   userRole
 } = require("./middleware");
 const db = require("./utils/db/db");
@@ -278,20 +277,15 @@ app.post(
   }
 );
 
-app.get("/project/:projectID", setProject, authGetProject, (req, res) => {
+app.get("/project/:projectID", setProject, (req, res) => {
   res.json(req.project);
 });
 
-app.get(
-  "/project/description/:projectID",
-  setProject,
-  authGetProject,
-  async (req, res) => {
-    const description = await loadMarkdownFile(req.project.descriptionFileID);
+app.get("/project/description/:projectID", setProject, async (req, res) => {
+  const description = await loadMarkdownFile(req.project.descriptionFileID);
 
-    res.json({ description });
-  }
-);
+  res.json({ description });
+});
 
 app.all("*", (req, res) => {
   res.status(404).redirect("/");
