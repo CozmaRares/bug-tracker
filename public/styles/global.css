@@ -36,11 +36,11 @@ a {
   text-decoration: none;
 }
 
-a:hover {
+a.link:hover {
   font-style: italic;
 }
 
-a:hover::after {
+a.link:hover::after {
   content: "↗";
 }
 

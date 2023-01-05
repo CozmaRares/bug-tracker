@@ -24,7 +24,9 @@
         <% projects.forEach(project => {%>
         <li class="project">
           <h3>
-            <a href="/project/<%= project.id %>"><%= project.name %></a>
+            <a class="link" href="/project/<%= project.id %>">
+              <%= project.name %>
+            </a>
           </h3>
           <h6>Status: <%= project.status.toUpperCase() %></h6>
           <h4>Managed by <%= project.managerName %></h4>
@@ -55,6 +57,14 @@
 
     const registeredDevs = JSON.parse(
       "<%= JSON.stringify(devs)%>".replaceAll("&#34;", '"')
+    );
+
+    const managers = JSON.parse(
+      "<%= JSON.stringify(managers)%>".replaceAll("&#34;", '"')
+    );
+
+    const PROJECT_STATUS = JSON.parse(
+      "<%= JSON.stringify(PROJECT_STATUS)%>".replaceAll("&#34;", '"')
     );
 
     let selectedProject;
@@ -146,31 +156,11 @@
         </p>
         <div>
           Status:
-          <div class="select">
-            <p>
-              <span>${selectedProject.status}</span>
-              <i class="fa-sharp fa-solid fa-caret-down"></i>
-            </p>
-            <div class="options">
-              <% Object.entries(PROJECT_STATUS).forEach(([_,value])=> { %>
-              <p onmousedown="modifyStatus('<%= value %>')"><%= value %></p>
-              <% }) %>
-            </div>
-          </div>
+          <div data-status></div>
         </div>
         <div>
           Manager:
-          <div class="select">
-            <p>
-              <span>${selectedProject.managerName}</span>
-              <i class="fa-sharp fa-solid fa-caret-down"></i>
-            </p>
-            <div class="options">
-              <% Object.entries(managers).forEach(([_,value])=> { %>
-              <p onmousedown="modifyManager('<%= value %>')"><%= value %></p>
-              <% }) %>
-            </div>
-          </div>
+          <div data-manager></div>
         </div>
         <div class="devs">
           Devs:
@@ -184,7 +174,10 @@
         <button class="button" onmousedown="submitChanges()">Submit Changes</button>
       `;
 
-      setTimeout(setupSelect, 1);
+      setTimeout(() => {
+        createSelect("[data-status]", selectedProject.status, PROJECT_STATUS, modifyStatus);
+        createSelect("[data-manager]", selectedProject.managerName, managers, modifyManager);
+      }, 1);
       refreshDevs();
     }
 

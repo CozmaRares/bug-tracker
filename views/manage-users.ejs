@@ -19,21 +19,7 @@
             <h4><%= user.name %></h4>
             <p class="email"><%= user.email %></p>
           </div>
-          <div class="select">
-            <p>
-              <span id="role-<%= idx %>"><%= user.role %></span>
-              <i class="fa-sharp fa-solid fa-caret-down"></i>
-            </p>
-            <div class="options">
-              <% Object.entries(SELECT_ROLES).forEach(([_,value])=> { %>
-              <p
-                onmousedown="updateRole('<%=user.name%>','<%= value %>','<%= idx %>')"
-              >
-                <%= value %>
-              </p>
-              <% }) %>
-            </div>
-          </div>
+          <div data-select="<%= idx %>"></div>
         </div>
       </li>
       <% }) %>
@@ -41,9 +27,17 @@
     <%-include("partials/dashboard-layout-end") %>
   </body>
   <script>
-    setupSelect();
+      const MODIFIED_USER_ROLES = JSON.parse(
+      "<%= JSON.stringify(MODIFIED_USER_ROLES)%>".replaceAll("&#34;", '"')
+    );
 
-    function updateRole(userName, role, roleIdx) {
+     <% users.forEach((user, idx) => { %>
+      createSelect('[data-select="<%= idx %>"]', '<%= user.role %>', MODIFIED_USER_ROLES, (option) =>
+        updateRole('<%= user.name %>', option)
+      )
+    <% }) %>
+
+    function updateRole(userName, role) {
       fetch("/update-user-role", {
         method: "POST",
         body: JSON.stringify({ userName, role }),

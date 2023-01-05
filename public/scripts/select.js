@@ -16,28 +16,58 @@ function selectOption(select, option) {
   select.querySelector("p > span").innerText = option;
 }
 
-function setupSelect() {
-  document.querySelectorAll(".select").forEach(select => {
+/**
+ *
+ * @param {string} query - will be used in document.querySelector to select the container
+ * @param {any} defaultValue
+ * @param {string[]} options
+ * @param {function(string)} cb - callback function that receives the selected option
+ */
+function createSelect(query, defaultValue, options, cb) {
+  const select = document.querySelector(query);
+
+  select.classList.add("select");
+
+  select.addEventListener("mousedown", () => toggleSelect(select));
+
+  setTimeout(() => {
     select.style.setProperty(
       "--select-width",
       window.getComputedStyle(select.querySelector(".options")).width
     );
 
-    setTimeout(() => {
-      select
-        .querySelector(".options")
-        .style.setProperty(
-          "width",
-          window.getComputedStyle(select.querySelector(":scope > p")).width
-        );
-    }, 1);
-
-    select.addEventListener("mousedown", () => toggleSelect(select));
-
-    select.querySelectorAll(".options p").forEach(option => {
-      option.addEventListener("mousedown", () =>
-        selectOption(select, option.innerText)
+    select
+      .querySelector(".options")
+      .style.setProperty(
+        "width",
+        window.getComputedStyle(select.querySelector(":scope > p")).width
       );
+  }, 1);
+
+  const defaultContainer = document.createElement("p");
+
+  defaultContainer.innerHTML = `
+    <span>${defaultValue}</span>
+    <i class="fa-solid fa-caret-down"></i>
+  `;
+
+  const optionsContainer = document.createElement("div");
+
+  optionsContainer.classList.add("options");
+
+  options.forEach(option => {
+    const p = document.createElement("p");
+    p.innerText = option;
+
+    p.addEventListener("mousedown", () => {
+      selectOption(select, option);
+
+      if (cb) cb(option);
     });
+
+    optionsContainer.appendChild(p);
   });
+
+  select.appendChild(defaultContainer);
+  select.appendChild(optionsContainer);
 }

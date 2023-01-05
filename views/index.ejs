@@ -18,7 +18,9 @@
         <% projects.forEach(project => {%>
         <li class="project">
           <h3>
-            <a href="/project/<%= project.id %>"><%= project.name %></a>
+            <a class="link" href="/project/<%= project.id %>">
+              <%= project.name %>
+            </a>
           </h3>
           <h6>Status: <%= project.status.toUpperCase() %></h6>
           <h4>Managed by <%= project.managerName %></h4>

@@ -149,21 +149,27 @@ app.delete("/logout", (req, res) => {
   });
 });
 
+app.get("/submit-ticket", (req, res) => {
+  res.render("submit-ticket");
+});
+
 app.get(
   "/manage-users",
   userRole(dbEnums.USER_ROLE.ADMIN),
   async (req, res) => {
     const users = await db.user.getAll();
-    const SELECT_ROLES = { ...dbEnums.USER_ROLE };
+    const MODIFIED_USER_ROLES = { ...dbEnums.USER_ROLE };
 
-    delete SELECT_ROLES[dbEnums.USER_ROLE.ADMIN];
+    delete MODIFIED_USER_ROLES[dbEnums.USER_ROLE.ADMIN];
 
     res.render("manage-users", {
       users: users.filter(user => user.role != dbEnums.USER_ROLE.ADMIN),
       username: req.user.name,
       role: req.user.role,
       USER_ROLE: dbEnums.USER_ROLE,
-      SELECT_ROLES
+      MODIFIED_USER_ROLES: Object.entries(MODIFIED_USER_ROLES).map(
+        ([_, value]) => value
+      )
     });
   }
 );
@@ -212,7 +218,9 @@ app.get(
       username: req.user.name,
       role: req.user.role,
       USER_ROLE: dbEnums.USER_ROLE,
-      PROJECT_STATUS: dbEnums.PROJECT_STATUS,
+      PROJECT_STATUS: Object.entries(dbEnums.PROJECT_STATUS).map(
+        ([_, value]) => value
+      ),
       devs: users
         .filter(user => user.role != dbEnums.USER_ROLE.SUBMITTER)
         .map(user => user.name),
