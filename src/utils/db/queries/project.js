@@ -69,6 +69,21 @@ function getById(id) {
   );
 }
 
+function getByName(name) {
+  const query = `
+    SELECT *
+    FROM Project
+    WHERE name = '${name}'
+  `;
+
+  return new Promise(resolve =>
+    runQuery(query, data => {
+      if (data.length) resolve(data[0]);
+      else resolve(null);
+    })
+  );
+}
+
 function getAssignedDevs(projectID) {
   const query = `
     SELECT User.*
@@ -235,6 +250,7 @@ module.exports = {
   updateStatus,
   getAll,
   getById,
+  getByName,
   isDevAssigned,
   addDev,
   updateName,

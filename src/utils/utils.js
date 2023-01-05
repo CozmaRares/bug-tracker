@@ -75,6 +75,10 @@ function formatDates(obj) {
   return newObj;
 }
 
+function getValuesFromObject(obj) {
+  return Object.entries(obj).map(([_, value]) => value);
+}
+
 module.exports = {
   hashPassword,
   comparePassword,
@@ -83,5 +87,6 @@ module.exports = {
   loadParsedMarkdownFile,
   updateMarkdownFile,
   dateToString,
-  formatDates
+  formatDates,
+  getValuesFromObject
 };

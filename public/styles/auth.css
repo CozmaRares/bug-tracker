@@ -32,6 +32,11 @@ h1 span {
   border-bottom: 4px solid black;
 }
 
+.animated-label-input {
+  margin-top: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
 button {
   display: block;
   width: 100%;

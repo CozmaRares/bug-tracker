@@ -11,7 +11,8 @@ const {
   hashPassword,
   formatDates,
   updateMarkdownFile,
-  loadMarkdownFile
+  loadMarkdownFile,
+  getValuesFromObject
 } = require("./utils/utils");
 const {
   checkAuthenticated,
@@ -148,8 +149,31 @@ app.delete("/logout", (req, res) => {
   });
 });
 
-app.get("/submit-ticket", (req, res) => {
-  res.render("submit-ticket");
+app.get("/submit-ticket", async (req, res) => {
+  const projectNames = await db.project
+    .getAll("name")
+    .then(projects => projects.map(project => project.name));
+
+  res.render("submit-ticket", {
+    TICKET_TYPE: getValuesFromObject(dbEnums.TICKET_TYPE),
+    projectNames
+  });
+});
+
+app.post("/submit-ticket", async (req, res) => {
+  const project = await db.project.getByName(req.body.projectName);
+
+  const ticket = {
+    description: req.body.description,
+    title: req.body.title,
+    projectID: project.id,
+    authorName: req.user.name,
+    type: req.body.type
+  };
+
+  await db.ticket.create(ticket);
+
+  res.redirect("/");
 });
 
 app.get(
@@ -166,9 +190,7 @@ app.get(
       username: req.user.name,
       role: req.user.role,
       USER_ROLE: dbEnums.USER_ROLE,
-      MODIFIED_USER_ROLES: Object.entries(MODIFIED_USER_ROLES).map(
-        ([_, value]) => value
-      )
+      MODIFIED_USER_ROLES: getValuesFromObject(MODIFIED_USER_ROLES)
     });
   }
 );
@@ -217,9 +239,7 @@ app.get(
       username: req.user.name,
       role: req.user.role,
       USER_ROLE: dbEnums.USER_ROLE,
-      PROJECT_STATUS: Object.entries(dbEnums.PROJECT_STATUS).map(
-        ([_, value]) => value
-      ),
+      PROJECT_STATUS: getValuesFromObject(dbEnums.PROJECT_STATUS),
       devs: users
         .filter(user => user.role != dbEnums.USER_ROLE.SUBMITTER)
         .map(user => user.name),

@@ -40,7 +40,7 @@ a.link:hover {
   font-style: italic;
 }
 
-a.link:hover::after {
+a.link::after {
   content: "↗";
 }
 

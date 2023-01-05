@@ -47,7 +47,7 @@ function createSelect(query, defaultValue, options, cb) {
   const defaultContainer = document.createElement("p");
 
   defaultContainer.innerHTML = `
-    <span>${defaultValue}</span>
+    <span class="value">${defaultValue}</span>
     <i class="fa-solid fa-caret-down"></i>
   `;
 

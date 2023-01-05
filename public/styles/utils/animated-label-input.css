@@ -1,9 +1,5 @@
-/* animated-label-input */
-
 .animated-label-input {
   position: relative;
-  margin-top: 1.25rem;
-  margin-bottom: 2.5rem;
   cursor: text;
   font-size: 1em;
 }
