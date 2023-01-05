@@ -3,7 +3,7 @@ const crypto = require("crypto");
 const { createMarkdownFile } = require("../../utils");
 const { runQuery } = require("./runQuery");
 
-function create(comment) {
+async function create(comment) {
   const contentFileID = createMarkdownFile(comment.description);
   const id = crypto.randomUUID();
 
@@ -23,14 +23,8 @@ function create(comment) {
       )
     `;
 
-  return new Promise(resolve =>
-    runQuery(query, data =>
-      resolve({
-        data,
-        id
-      })
-    )
-  );
+  const data = await runQuery(query);
+  return { data, id };
 }
 
 module.exports = {

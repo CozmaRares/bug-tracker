@@ -16,10 +16,13 @@
   gap: 0.25rem;
 }
 
-.select > p span {
-  display: block;
+.select .value {
   min-width: fit-content;
-  width: var(--select-width, fit-content);
+  width: var(--select-width);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  /* TODO: make text-overflow work */
 }
 
 .select i {

@@ -7,10 +7,9 @@ fs.readFileSync(path.join(__dirname, "schema.sql"), "utf-8")
   .split("\n\n")
   .filter(query => query.length != 0)
   .forEach(query => {
-    runQuery(query, data => {
+    runQuery(query).then(data => {
       console.log(data);
     });
   });
 
 endConnection();
-

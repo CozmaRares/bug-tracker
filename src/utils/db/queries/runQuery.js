@@ -11,19 +11,21 @@ dbConnection.connect(err => {
   console.log("Connected to database");
 });
 
-function runQuery(query, cb) {
-  dbConnection.query(query, (err, data) => {
-    if (err) throw err;
+function runQuery(query) {
+  return new Promise((resolve, reject) => {
+    dbConnection.query(query, (err, data) => {
+      if (err) reject(err);
 
-    console.log({
-      query: query
-        .split("\n")
-        .map(str => str.trim())
-        .filter(str => str.length != 0)
-        .join(" ")
+      console.log({
+        query: query
+          .split("\n")
+          .map(str => str.trim())
+          .filter(str => str.length != 0)
+          .join(" ")
+      });
+
+      resolve(data);
     });
-
-    cb(data);
   });
 }
 

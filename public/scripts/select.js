@@ -13,7 +13,7 @@ function toggleSelect(select) {
 }
 
 function selectOption(select, option) {
-  select.querySelector("p > span").innerText = option;
+  select.querySelector(".value").innerText = option;
 }
 
 /**
@@ -47,7 +47,7 @@ function createSelect(query, defaultValue, options, cb) {
   const defaultContainer = document.createElement("p");
 
   defaultContainer.innerHTML = `
-    <span class="value">${defaultValue}</span>
+    <div class="value">${defaultValue}</div>
     <i class="fa-solid fa-caret-down"></i>
   `;
 

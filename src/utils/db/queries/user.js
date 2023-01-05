@@ -16,14 +16,11 @@ function create(user) {
     );
   `;
 
-  return new Promise(resolve =>
-    runQuery(query, data =>
-      resolve({
-        data,
-        name: user.name
-      })
-    )
-  );
+  const data = runQuery(query);
+  return {
+    data,
+    name: user.name
+  };
 }
 
 function getAll(...columns) {
@@ -33,37 +30,29 @@ function getAll(...columns) {
     ORDER BY name
   `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
-function getByEmail(email) {
+async function getByEmail(email) {
   const query = `
     SELECT * 
     FROM User
     WHERE email = '${email}'
   `;
 
-  return new Promise(resolve =>
-    runQuery(query, data => {
-      if (data.length) resolve(data[0]);
-      else resolve(null);
-    })
-  );
+  const data = await runQuery(query);
+  return data.length ? data[0] : null;
 }
 
-function getByName(name) {
+async function getByName(name) {
   const query = `
     SELECT * 
     FROM User
     WHERE name = '${name}'
   `;
 
-  return new Promise(resolve =>
-    runQuery(query, data => {
-      if (data.length) resolve(data[0]);
-      else resolve(null);
-    })
-  );
+  const data = await runQuery(query);
+  return data.length ? data[0] : null;
 }
 
 function updateRole(name, role) {
@@ -73,7 +62,7 @@ function updateRole(name, role) {
     WHERE name='${name}'
   `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
 function getAssignedProjects(userName) {
@@ -85,7 +74,7 @@ function getAssignedProjects(userName) {
       AND leftAt IS NULL
   `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
 function getManagedProjects(userName) {
@@ -95,7 +84,7 @@ function getManagedProjects(userName) {
     WHERE managerName = '${userName}'
   `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
 function getAssignedTickets(userName) {
@@ -106,7 +95,7 @@ function getAssignedTickets(userName) {
     WHERE userName='${userName}'
   `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
 module.exports = {

@@ -161,8 +161,7 @@ app.get("/submit-ticket", async (req, res) => {
 });
 
 app.post("/submit-ticket", async (req, res) => {
-  if (req.body.title == "")
-    return res.status(400).json({ error: "Invalid title" });
+  if (req.body.title == "") return res.status(400).send("Ticket needs a title");
 
   const project = await db.project.getByName(req.body.projectName);
 
@@ -176,6 +175,28 @@ app.post("/submit-ticket", async (req, res) => {
 
   await db.ticket.create(ticket);
   res.redirect("/");
+});
+
+app.get("/submit-project", (req, res) => {
+  res.render("submit-project");
+});
+
+app.post("/submit-project", (req, res) => {
+  if (req.body.name == "") return res.status(400).send("Project needs a title");
+
+  const project = {
+    description: req.body.description,
+    name: req.body.name
+  };
+
+  db.project
+    .createProposition(project)
+    .then(() => res.redirect("/"))
+    .catch(err => {
+      console.log(err);
+
+      res.status(400).send("A project with the given title already exists");
+    });
 });
 
 app.get(

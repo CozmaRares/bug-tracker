@@ -2,7 +2,7 @@ const crypto = require("crypto");
 
 const { runQuery } = require("./runQuery");
 
-function create(comment) {
+async function create(comment) {
   const id = crypto.randomUUID();
 
   const query = `
@@ -21,14 +21,8 @@ function create(comment) {
       )
     `;
 
-  return new Promise(resolve =>
-    runQuery(query, data =>
-      resolve({
-        data,
-        id
-      })
-    )
-  );
+  const data = await runQuery(query);
+  return { data, id };
 }
 
 module.exports = {

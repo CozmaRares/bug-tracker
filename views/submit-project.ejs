@@ -4,72 +4,50 @@
     <%- include("partials/head") %>
     <link rel="stylesheet" href="/styles/submit-form.css" />
     <link rel="stylesheet" href="/styles/utils/animated-label-input.css" />
-    <link rel="stylesheet" href="/styles/utils/select.css" />
     <script src="/scripts/animatedLabel.js"></script>
-    <script src="/scripts/select.js"></script>
   </head>
   <body>
     <main>
       <h1>
-        <i class="fa-solid fa-ticket"></i>
-        <span>Create a Ticket</span>
+        <i class="fa-solid fa-code"></i>
+        <span>Create a Project</span>
       </h1>
       <div>
         <div class="animated-label-input" data-input="1"></div>
-        <div class="select-container">
-          Project:
-          <div data-project></div>
-        </div>
-        <div class="select-container">
-          Type:
-          <div data-type></div>
-        </div>
         <div>
           <p class="description">Description</p>
           <textarea name="description" id="description" rows="15"></textarea>
         </div>
-        <button onclick="sendTicket()">Submit Ticket</button>
+        <button onclick="sendProject()">Submit Project</button>
       </div>
     </main>
   </body>
   <script>
-    const TICKET_TYPE = JSON.parse(
-      "<%= JSON.stringify(TICKET_TYPE)%>".replaceAll("&#34;", '"')
-    );
-
-    const projectNames = JSON.parse(
-      "<%= JSON.stringify(projectNames)%>".replaceAll("&#34;", '"')
-    );
-
     createAnimatedInput({
       input: 1,
-      id: "title",
-      label: "title",
+      id: "name",
+      label: "name",
       type: "text",
       icon: "fa-solid fa-heading",
       error: false,
       errorText: "",
       initialValue: ""
     });
-    createSelect("[data-project]", projectNames[0], projectNames);
-    createSelect("[data-type]", TICKET_TYPE[0], TICKET_TYPE);
 
-    function sendTicket() {
-      const title = document.getElementById("title").value;
+    function sendProject() {
+      const name = document.getElementById("name").value;
       const description = document.getElementById("description").value;
-      const type = document.querySelector("[data-type] .value").innerText;
-      const projectName = document.querySelector(
-        "[data-project] .value"
-      ).innerText;
 
-      fetch("/submit-ticket", {
+      fetch("/submit-project", {
         method: "POST",
-        body: JSON.stringify({ title, description, type, projectName }),
+        body: JSON.stringify({ name, description }),
         headers: {
           "Content-Type": "application/json"
         }
       })
         .then(res => {
+          console.log(res);
+
           if (!res.ok) {
             if (res.status === 400) {
               res.text().then(data => alert(data));

@@ -2,6 +2,7 @@ const crypto = require("crypto");
 
 const { createMarkdownFile } = require("../../utils");
 const { runQuery } = require("./runQuery");
+const { PROJECT_STATUS } = require("../enums");
 
 async function create(project) {
   const id = crypto.randomUUID();
@@ -13,31 +14,48 @@ async function create(project) {
         id,
         name,
         descriptionFileID,
-        managerName
+        managerName,
+        status
       )
     VALUES(
       '${id}',
       '${project.name}',
       '${descriptionFileID}',
-      '${project.managerName}'
+      '${project.managerName}',
+      '${PROJECT_STATUS.DEVELOPMENT}'
     )
   `;
 
-  const ret = await new Promise(resolve =>
-    runQuery(query, data =>
-      resolve({
-        data,
-        id
-      })
-    )
-  );
+  const data = await runQuery(query);
 
   await createProjectManagerHistoryEntry({
     managerName: project.managerName,
     projectID: id
   });
 
-  return ret;
+  return { data, id };
+}
+
+async function createProposition(project) {
+  const id = crypto.randomUUID();
+  const descriptionFileID = createMarkdownFile(project.description);
+
+  const query = `
+    INSERT INTO
+      Project(
+        id,
+        name,
+        descriptionFileID
+      )
+    VALUES(
+      '${id}',
+      '${project.name}',
+      '${descriptionFileID}'
+    )
+  `;
+
+  const data = await runQuery(query);
+  return { data, id };
 }
 
 function getAll(...columns) {
@@ -51,37 +69,29 @@ function getAll(...columns) {
     ORDER BY name
   `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
-function getById(id) {
+async function getById(id) {
   const query = `
-    SELECT * 
+    SELECT *
     FROM Project
     WHERE id = '${id}'
   `;
 
-  return new Promise(resolve =>
-    runQuery(query, data => {
-      if (data.length) resolve(data[0]);
-      else resolve(null);
-    })
-  );
+  const data = await runQuery(query);
+  return (data.length ? data[0] : null);
 }
 
-function getByName(name) {
+async function getByName(name) {
   const query = `
     SELECT *
     FROM Project
     WHERE name = '${name}'
   `;
 
-  return new Promise(resolve =>
-    runQuery(query, data => {
-      if (data.length) resolve(data[0]);
-      else resolve(null);
-    })
-  );
+  const data = await runQuery(query);
+  return (data.length ? data[0] : null);
 }
 
 function getAssignedDevs(projectID) {
@@ -93,7 +103,7 @@ function getAssignedDevs(projectID) {
       AND leftAt IS NULL
   `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
 async function updateManager(projectID, managerName) {
@@ -103,9 +113,7 @@ async function updateManager(projectID, managerName) {
     WHERE id='${projectID}'
   `;
 
-  const ret = await new Promise(resolve =>
-    runQuery(query, data => resolve(data))
-  );
+  const ret = await runQuery(query);
 
   await updateProjectManagerHistoryEntry(projectID);
   await createProjectManagerHistoryEntry({
@@ -123,7 +131,7 @@ function updateName(projectID, name) {
     WHERE id='${projectID}'
   `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
 function updateStatus(projectID, status) {
@@ -133,10 +141,10 @@ function updateStatus(projectID, status) {
     WHERE id='${projectID}'
   `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
-function isDevAssigned(projectID, userName) {
+async function isDevAssigned(projectID, userName) {
   const query = `
     SELECT *
     FROM ProjectDevHistory
@@ -145,12 +153,11 @@ function isDevAssigned(projectID, userName) {
       AND leftAt IS NULL
   `;
 
-  return new Promise(resolve =>
-    runQuery(query, data => resolve(data.length != 0))
-  );
+  const data = await runQuery(query);
+  return data.length != 0;
 }
 
-function createProjectManagerHistoryEntry(entry) {
+async function createProjectManagerHistoryEntry(entry) {
   const query = `
     INSERT INTO
     ProjectMangerHistory(
@@ -163,18 +170,11 @@ function createProjectManagerHistoryEntry(entry) {
     )
   `;
 
-  return new Promise(resolve =>
-    runQuery(query, data =>
-      resolve({
-        data,
-        managerName: entry.managerName,
-        projectID: entry.projectID
-      })
-    )
-  );
+  const data = await runQuery(query);
+  return { data, managerName: entry.managerName, projectID: entry.projectID };
 }
 
-function updateProjectManagerHistoryEntry(projectID) {
+async function updateProjectManagerHistoryEntry(projectID) {
   const query = `
     UPDATE ProjectMangerHistory
     SET leftAt=CURRENT_TIMESTAMP
@@ -182,17 +182,11 @@ function updateProjectManagerHistoryEntry(projectID) {
       AND projectID='${projectID}'
   `;
 
-  return new Promise(resolve =>
-    runQuery(query, data =>
-      resolve({
-        data,
-        projectID
-      })
-    )
-  );
+  const data = await runQuery(query);
+  return { data, projectID: projectID };
 }
 
-function addDev(userName, projectID) {
+async function addDev(userName, projectID) {
   const query = `
     INSERT INTO
     ProjectDevHistory(
@@ -205,15 +199,12 @@ function addDev(userName, projectID) {
     )
   `;
 
-  return new Promise(resolve =>
-    runQuery(query, data =>
-      resolve({
-        data,
-        userName: userName,
-        projectID: projectID
-      })
-    )
-  );
+  const data = await runQuery(query);
+  return {
+    data,
+    userName: userName,
+    projectID: projectID
+  };
 }
 
 function removeDev(userName, projectID) {
@@ -225,7 +216,7 @@ function removeDev(userName, projectID) {
       AND userName='${userName}'
   `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
 async function moveDev(userName, oldProjectID, newProjectID) {
@@ -241,11 +232,12 @@ function getTickets(projectID) {
     WHERE projectID ='${projectID}'
   `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
 module.exports = {
   create,
+  createProposition,
   updateManager,
   updateStatus,
   getAll,

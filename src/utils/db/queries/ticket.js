@@ -4,7 +4,7 @@ const { TICKET_STATUS } = require("../enums");
 const { createMarkdownFile } = require("../../utils");
 const { runQuery } = require("./runQuery");
 
-function create(ticket) {
+async function create(ticket) {
   const descriptionFileID = createMarkdownFile(ticket.description);
   const id = crypto.randomUUID();
 
@@ -28,14 +28,8 @@ function create(ticket) {
       )
     `;
 
-  return new Promise(resolve =>
-    runQuery(query, data =>
-      resolve({
-        data,
-        id
-      })
-    )
-  );
+  const data = await runQuery(query);
+  return { data, id };
 }
 
 function getAll(...columns) {
@@ -45,7 +39,7 @@ function getAll(...columns) {
     ORDER BY title
   `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
 function updateType(id, type) {
@@ -55,7 +49,7 @@ function updateType(id, type) {
       WHERE id='${id}'
     `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
 async function updateStatus(id, status) {
@@ -67,7 +61,7 @@ async function updateStatus(id, status) {
 
   if (status === TICKET_STATUS.COMPLETED) await updateTicketAssignmentEntry(id);
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
 function updatePriority(id, priority) {
@@ -77,25 +71,10 @@ function updatePriority(id, priority) {
         WHERE id='${id}'
     `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
-async function assign(ticketID, ...userNames) {
-  const promises = [];
-
-  userNames.forEach(userName =>
-    promises.push(
-      createTicketAssignmentEntry({
-        ticketID: ticketID,
-        userName: userName
-      })
-    )
-  );
-
-  return Promise.all(promises);
-}
-
-function createTicketAssignmentEntry(entry) {
+async function assign(ticketID, userName) {
   const query = `
       INSERT INTO
         TicketAssignment(
@@ -103,20 +82,13 @@ function createTicketAssignmentEntry(entry) {
           ticketID
         )
       VALUES(
-        '${entry.userName}',
-        '${entry.ticketID}'
+        '${userName}',
+        '${ticketID}'
       )
     `;
 
-  return new Promise(resolve =>
-    runQuery(query, data =>
-      resolve({
-        data,
-        userName: entry.userName,
-        ticketID: entry.ticketID
-      })
-    )
-  );
+  const data = await runQuery(query);
+  return { data, userName: userName, ticketID: ticketID };
 }
 
 function updateTicketAssignmentEntry(ticketID) {
@@ -126,7 +98,7 @@ function updateTicketAssignmentEntry(ticketID) {
       WHERE ticketID='${ticketID}'
     `;
 
-  return new Promise(resolve => runQuery(query, data => resolve(data)));
+  return runQuery(query);
 }
 
 module.exports = {
