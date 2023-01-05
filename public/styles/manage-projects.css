@@ -7,16 +7,17 @@ main {
   margin: 0 1rem;
 }
 
-.project button {
+.button {
   width: 80%;
   margin: 0 auto;
   border: 1px solid var(--main-text);
   background-color: var(--secondary-bg);
   border-radius: 10px;
   transition-property: background-color, color;
+  cursor: pointer;
 }
 
-.project button:hover {
+.button:hover {
   background-color: var(--main-text);
   color: var(--secondary-bg);
 }
@@ -117,4 +118,10 @@ main {
   width: 100%;
   padding: 1rem;
   outline: none;
+}
+
+.modify .button {
+  /* text-xl */
+  font-size: 1.25rem;
+  line-height: 1.75rem;
 }

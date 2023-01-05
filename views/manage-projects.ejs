@@ -38,7 +38,9 @@
             </ul>
           </div>
 
-          <button onclick="loadProject('<%= project.id %>')">Modify</button>
+          <button class="button" onclick="loadProject('<%= project.id %>')">
+            Modify
+          </button>
         </li>
         <% }) %>
       </ul>
@@ -179,7 +181,7 @@
          <p>Description</p>
           <textarea rows="15" data-description>${description}</textarea>
         </div>
-        <button onmousedown="submitChanges()">Submit Changes</button>
+        <button class="button" onmousedown="submitChanges()">Submit Changes</button>
       `;
 
       setTimeout(setupSelect, 1);

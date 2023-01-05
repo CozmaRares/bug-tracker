@@ -71,11 +71,6 @@
   color: /* gray-700 */ #374151;
 }
 
-.links a {
-  text-decoration: none;
-  color: inherit;
-}
-
 .links li {
   margin: 0.5rem 0;
   display: flex;
@@ -106,6 +101,15 @@
     /* slate-100 */ #f1f5f9,
     var(--main-bg)
   );
+}
+
+.links a:not(.selected) li i {
+  transition-property: transform;
+  transition-duration: 200ms;
+}
+
+.links a:not(.selected) li:hover i {
+  transform: rotateY(360deg) rotateZ(360deg);
 }
 
 .links li div {
