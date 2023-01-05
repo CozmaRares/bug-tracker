@@ -161,6 +161,9 @@ app.get("/submit-ticket", async (req, res) => {
 });
 
 app.post("/submit-ticket", async (req, res) => {
+  if (req.body.title == "")
+    return res.status(400).json({ error: "Invalid title" });
+
   const project = await db.project.getByName(req.body.projectName);
 
   const ticket = {
@@ -172,7 +175,6 @@ app.post("/submit-ticket", async (req, res) => {
   };
 
   await db.ticket.create(ticket);
-
   res.redirect("/");
 });
 

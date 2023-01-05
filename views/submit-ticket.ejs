@@ -70,13 +70,15 @@
         }
       })
         .then(res => {
-          if (!res.ok) throw new Error("HTTP error " + res.status);
+          if (!res.ok) {
+            if (res.status === 400) return alert("Invalid title");
+
+            throw new Error("HTTP error " + res.status);
+          }
 
           location.href = res.url;
         })
         .catch(err => console.log(err));
-
-      console.log({ title, description, type });
     }
   </script>
 </html>
