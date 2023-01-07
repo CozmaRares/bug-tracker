@@ -1,8 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap");
 
-*,
-*::before,
-*::after {
+:where(:not(.md *)),
+:where(:not(.md *))::before,
+:where(:not(.md *))::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -27,11 +27,11 @@ body {
   font-family: "Roboto Mono", monospace;
 }
 
-ul {
+:where(ul:not(.md *)) {
   list-style: none;
 }
 
-a {
+:where(a:not(.md *)) {
   color: inherit;
   text-decoration: none;
 }

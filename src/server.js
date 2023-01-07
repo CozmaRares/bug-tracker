@@ -12,6 +12,7 @@ const {
   formatDates,
   updateMarkdownFile,
   loadMarkdownFile,
+  loadParsedMarkdownFile,
   getValuesFromObject
 } = require("./utils/utils");
 const {
@@ -90,26 +91,8 @@ app.post(
 app.use(checkAuthenticated);
 
 app.get("/", async (req, res) => {
-  let projectPromise;
-  let ticketPromise;
-
-  switch (req.user.role) {
-    case dbEnums.USER_ROLE.DEVELOPER:
-      projectPromise = db.user.getAssignedProjects(req.user.name);
-      ticketPromise = db.user.getAssignedTickets(req.user.name);
-      break;
-    case dbEnums.USER_ROLE.MANAGER:
-      projectPromise = db.user.getManagedProjects(req.user.name);
-      ticketPromise = db.project.getTickets(req.user.name);
-      break;
-    case dbEnums.USER_ROLE.ADMIN:
-      projectPromise = db.project.getAll();
-      ticketPromise = db.ticket.getAll();
-      break;
-  }
-
-  const projects = await projectPromise;
-  const tickets = await ticketPromise;
+  const projects = await db.project.getAll();
+  const tickets = await db.ticket.getAll();
 
   const ticketsData = {
     priority: {},
@@ -319,6 +302,29 @@ app.post(
     res.status(204).send();
   }
 );
+
+app.get("/projects", async (req, res) => {
+  const projects = await db.user.getAssignedProjects(req.user.name);
+
+  const promises = projects.map(async project => {
+    project.description = await loadParsedMarkdownFile(
+      project.descriptionFileID
+    );
+
+    console.log(project);
+  });
+
+  await Promise.all(promises);
+
+  console.log("after");
+
+  res.render("projects", {
+    projects: projects.map(formatDates),
+    username: req.user.name,
+    role: req.user.role,
+    USER_ROLE: dbEnums.USER_ROLE
+  });
+});
 
 app.get("/project/:projectID", setProject, (req, res) => {
   res.json(req.project);

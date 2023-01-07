@@ -2,7 +2,7 @@
   margin: 0 1rem;
 }
 
-.projects ul {
+.projects .project-list {
   margin: 0;
 }
 
@@ -16,6 +16,6 @@
   row-gap: 0.5rem;
 }
 
-.project a {
+.project .project-link {
   border-bottom: 2px solid black;
 }

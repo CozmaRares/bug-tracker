@@ -166,5 +166,6 @@
 
 main {
   overflow: auto;
+  padding: 0 1rem;
   padding-top: 2rem;
 }

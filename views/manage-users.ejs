@@ -34,7 +34,7 @@
      <% users.forEach((user, idx) => { %>
       createSelect('[data-select="<%= idx %>"]', '<%= user.role %>', MODIFIED_USER_ROLES, (option) =>
         updateRole('<%= user.name %>', option)
-      )
+      );
     <% }) %>
 
     function updateRole(userName, role) {

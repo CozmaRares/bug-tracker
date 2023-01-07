@@ -20,11 +20,11 @@
       <% if(projects.length == 0) {%>
       <p>No projects.</p>
       <% } else { %>
-      <ul>
+      <ul class="project-list">
         <% projects.forEach(project => {%>
         <li class="project">
           <h3>
-            <a class="link" href="/project/<%= project.id %>">
+            <a class="project-link link" href="/project/<%= project.id %>">
               <%= project.name %>
             </a>
           </h3>
@@ -33,11 +33,15 @@
           <p>Created at <%= project.createdAt %></p>
           <div class="assigned-devs">
             <span>Assigned devs:</span>
+            <% if(project.assignedDevs.length ==0) { %>
+            <span>None</span>
+            <% }else{ %>
             <ul>
               <% project.assignedDevs.forEach(dev => { %>
               <li><%= dev %></li>
               <% }) %>
             </ul>
+            <% } %>
           </div>
 
           <button class="button" onclick="loadProject('<%= project.id %>')">
@@ -175,8 +179,18 @@
       `;
 
       setTimeout(() => {
-        createSelect("[data-status]", selectedProject.status, PROJECT_STATUS, modifyStatus);
-        createSelect("[data-manager]", selectedProject.managerName, managers, modifyManager);
+        createSelect(
+          "[data-status]",
+          selectedProject.status,
+          PROJECT_STATUS,
+          modifyStatus
+        );
+        createSelect(
+          "[data-manager]",
+          selectedProject.managerName,
+          managers,
+          modifyManager
+        );
       }, 1);
       refreshDevs();
     }

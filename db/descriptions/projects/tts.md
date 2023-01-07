@@ -1,4 +1,4 @@
-# Text to Speech Raspberry Pi
+# Virtual Assistant Raspberry Pi
 
 ## Description
 
@@ -6,7 +6,7 @@ Raspberry Pi powered text to speech that tells your schedule.
 
 ## Features to be added
 
-* ~~load schedule~~
-* ~~LEDs when thinking~~
-* ~~microphone input~~
-* ~~speaker output~~
+* [X] load schedule
+* [X] LEDs when thinking
+* [X] microphone input
+* [X] speaker output

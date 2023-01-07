@@ -14,11 +14,11 @@
       <% if(projects.length == 0) {%>
       <p>No projects.</p>
       <% } else { %>
-      <ul>
+      <ul class="project-list">
         <% projects.forEach(project => {%>
         <li class="project">
           <h3>
-            <a class="link" href="/project/<%= project.id %>">
+            <a class="project-link link" href="/project/<%= project.id %>">
               <%= project.name %>
             </a>
           </h3>

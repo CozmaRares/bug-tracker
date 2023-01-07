@@ -14,7 +14,10 @@ dbConnection.connect(err => {
 function runQuery(query) {
   return new Promise((resolve, reject) => {
     dbConnection.query(query, (err, data) => {
-      if (err) reject(err);
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
 
       console.log({
         query: query

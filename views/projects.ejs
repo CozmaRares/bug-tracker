@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head") %>
+    <link rel="stylesheet" href="/styles/dashboard.css" />
+    <link rel="stylesheet" href="/styles/utils/projects.css" />
+    <link rel="stylesheet" href="/styles/markdown.css" />
+  </head>
+  <body>
+    <%- include("partials/dashboard-layout-start", { username, role, USER_ROLE,
+    dataAttribute:"projects" }) %>
+    <div class="projects">
+      <h1 class="title">Projects</h1>
+      <% if(projects.length == 0) {%>
+      <p>No projects.</p>
+      <% } else { %>
+      <ul class="project-list">
+        <% projects.forEach(project => {%>
+        <li class="project">
+          <h3>
+            <a class="project-link link" href="/project/<%= project.id %>">
+              <%= project.name %>
+            </a>
+          </h3>
+          <h6>Status: <%= project.status.toUpperCase() %></h6>
+          <h4>Managed by <%= project.managerName %></h4>
+          <p>Created at <%= project.createdAt %></p>
+          <div
+            style="
+              width: 99%;
+              height: 2px;
+              background-color: black;
+              margin: 0 auto;
+              margin-top: 0.5rem;
+              grid-column: 1 / -1;
+            "
+          ></div>
+          <div style="grid-column: 1 / -1" class="md">
+            <%- project.description %>
+          </div>
+        </li>
+        <% }) %>
+      </ul>
+      <% } %>
+    </div>
+    <%-include("partials/dashboard-layout-end") %>
+  </body>
+</html>
